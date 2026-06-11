@@ -252,15 +252,25 @@
     bookingEl.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  // --- Menu mobile ---
+  // --- Barre de navigation flottante ---
+  var navShell = $("navShell");
   var burger = $("navBurger"), navLinks = $("navLinks");
+
+  function majNav() {
+    navShell.classList.toggle("scrolled", window.scrollY > 50);
+  }
+  window.addEventListener("scroll", majNav, { passive: true });
+  majNav();
+
   burger.addEventListener("click", function () {
     var ouvert = navLinks.classList.toggle("open");
+    navShell.classList.toggle("menu-open", ouvert);
     burger.setAttribute("aria-expanded", ouvert);
   });
   navLinks.addEventListener("click", function (e) {
     if (e.target.tagName === "A") {
       navLinks.classList.remove("open");
+      navShell.classList.remove("menu-open");
       burger.setAttribute("aria-expanded", "false");
     }
   });
