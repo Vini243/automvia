@@ -252,12 +252,19 @@
     bookingEl.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  // --- Barre de navigation flottante ---
+  // --- Barre de navigation flottante + projecteurs ---
   var navShell = $("navShell");
+  var spotlights = $("spotlights");
   var burger = $("navBurger"), navLinks = $("navLinks");
 
   function majNav() {
     navShell.classList.toggle("scrolled", window.scrollY > 50);
+    // Les projecteurs s'effacent en descendant, reviennent en remontant
+    if (spotlights) {
+      var opacite = Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.85));
+      spotlights.style.opacity = opacite;
+      spotlights.style.visibility = opacite === 0 ? "hidden" : "visible";
+    }
   }
   window.addEventListener("scroll", majNav, { passive: true });
   majNav();

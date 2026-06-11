@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Automvia — Automatisation pour PME au Québec</title>
   <meta name="description" content="Automvia configure vos courriels automatiques et votre prise de rendez-vous en ligne. Récupérez votre temps. Agence d'automatisation pour PME au Québec.">
+  <meta name="theme-color" content="#050507">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,6 +13,11 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 <body>
+
+  <!-- ===== Projecteurs animés (s'estompent au défilement) ===== -->
+  <div class="spotlights" id="spotlights" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
 
   <!-- ===== NAVIGATION (barre flottante, se compacte au défilement) ===== -->
   <header class="nav" id="nav">
@@ -35,9 +41,6 @@
   <main>
     <!-- ===== SECTION 1 : ACCUEIL ===== -->
     <section class="hero" id="accueil">
-      <div class="hero-beams" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </div>
       <div class="container">
         <a href="#reserver" class="hero-badge anim anim-1">
           <span class="hero-badge-text">Nouveau — Essayez notre prise de rendez-vous, intégrée à ce site</span>
