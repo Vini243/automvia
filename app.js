@@ -282,6 +282,80 @@
     }
   });
 
+  // --- Services : onglets verticaux avec défilement automatique ---
+  var vtabsRoot = $("vtabs");
+  if (vtabsRoot) {
+    var DUREE_AUTO = 5000;
+    var onglets = Array.prototype.slice.call(vtabsRoot.querySelectorAll(".vtab"));
+    var lames = Array.prototype.slice.call(vtabsRoot.querySelectorAll(".vtab-slide"));
+    var galerie = $("vtabsGallery");
+    var actifV = 0;
+    var minuterie = null;
+
+    function relancerBarre() {
+      var barre = onglets[actifV].querySelector(".vtab-progress i");
+      barre.style.animation = "none";
+      void barre.offsetWidth; // force le redémarrage de l'animation
+      barre.style.animation = "";
+    }
+
+    function activerService(index, dir) {
+      if (index === actifV) return;
+      var entrant = lames[index], sortant = lames[actifV];
+
+      // La nouvelle image arrive du haut (suivant) ou du bas (précédent)
+      entrant.style.transition = "none";
+      entrant.style.transform = "translateY(" + (dir > 0 ? "-100%" : "100%") + ")";
+      entrant.style.opacity = "0";
+      void entrant.offsetWidth;
+      entrant.style.transition = "";
+      entrant.classList.add("active");
+      entrant.style.transform = "";
+      entrant.style.opacity = "";
+
+      sortant.classList.remove("active");
+      sortant.style.transform = "translateY(" + (dir > 0 ? "100%" : "-100%") + ")";
+      sortant.style.opacity = "0";
+
+      onglets[actifV].classList.remove("active");
+      onglets[index].classList.add("active");
+      actifV = index;
+      relancerBarre();
+      redemarrerAuto();
+    }
+
+    function serviceSuivant() { activerService((actifV + 1) % lames.length, 1); }
+    function servicePrecedent() { activerService((actifV - 1 + lames.length) % lames.length, -1); }
+
+    function redemarrerAuto() {
+      clearInterval(minuterie);
+      minuterie = setInterval(serviceSuivant, DUREE_AUTO);
+    }
+
+    onglets.forEach(function (o) {
+      o.addEventListener("click", function () {
+        var i = parseInt(o.getAttribute("data-index"), 10);
+        activerService(i, i > actifV ? 1 : -1);
+      });
+    });
+    $("vtabNext").addEventListener("click", function (e) { e.stopPropagation(); serviceSuivant(); });
+    $("vtabPrev").addEventListener("click", function (e) { e.stopPropagation(); servicePrecedent(); });
+    galerie.addEventListener("click", serviceSuivant);
+
+    // Survol de la galerie : pause du défilement et de la barre
+    galerie.addEventListener("mouseenter", function () {
+      vtabsRoot.classList.add("paused");
+      clearInterval(minuterie);
+    });
+    galerie.addEventListener("mouseleave", function () {
+      vtabsRoot.classList.remove("paused");
+      relancerBarre();
+      redemarrerAuto();
+    });
+
+    redemarrerAuto();
+  }
+
   // --- Init ---
   $("year").textContent = new Date().getFullYear();
   rendreCalendrier();

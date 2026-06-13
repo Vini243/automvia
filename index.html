@@ -43,7 +43,7 @@
     <section class="hero" id="accueil">
       <div class="container">
         <a href="#reserver" class="hero-badge anim anim-1">
-          <span class="hero-badge-text">Nouveau — Essayez notre prise de rendez-vous, intégrée à ce site</span>
+          <span class="hero-badge-text">Prise de rendez-vous</span>
           <span class="hero-badge-sep" aria-hidden="true"></span>
           <span class="hero-badge-arrow" aria-hidden="true">
             <span class="arrow-track">
@@ -61,68 +61,68 @@
           <a href="#comment" class="btn btn-ghost btn-lg">Voir comment ça marche</a>
         </div>
 
-        <!-- Maquette : aperçu du système de réservation -->
-        <div class="hero-mockup anim anim-5" aria-hidden="true">
-          <div class="mockup-frame">
-            <div class="mockup-bar">
-              <span></span><span></span><span></span>
-              <span class="mockup-url">votre-entreprise.ca/reserver</span>
-            </div>
-            <div class="mockup-body">
-              <div class="mockup-cal">
-                <p class="mockup-title">Choisissez une date</p>
-                <div class="mockup-grid">
-                  <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
-                  <span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span class="off">13</span><span class="off">14</span>
-                  <span>15</span><span>16</span><span class="on">17</span><span>18</span><span>19</span><span class="off">20</span><span class="off">21</span>
-                </div>
-              </div>
-              <div class="mockup-slots">
-                <p class="mockup-title">Choisissez une heure</p>
-                <span>9 h 00</span>
-                <span class="on">10 h 30</span>
-                <span>13 h 00</span>
-              </div>
-              <div class="mockup-confirm">
-                <span class="mockup-check">✓</span>
-                Réservation confirmée — courriel de confirmation envoyé automatiquement
-              </div>
-            </div>
-          </div>
-          <div class="mockup-fade"></div>
-        </div>
-
-        <p class="hero-tools anim anim-6">On se branche aux outils que vous utilisez déjà — <strong>Gmail</strong>, <strong>Outlook</strong>, <strong>Google Agenda</strong> et plus.</p>
+        <p class="hero-tools anim anim-5">On se branche aux outils que vous utilisez déjà — <strong>Gmail</strong>, <strong>Outlook</strong>, <strong>Google Agenda</strong> et plus.</p>
       </div>
     </section>
 
-    <!-- ===== SECTION 2 : SERVICES ===== -->
+    <!-- ===== SECTION 2 : SERVICES (onglets verticaux + galerie) ===== -->
     <section class="section" id="services">
       <div class="container">
-        <h2>Nos services</h2>
-        <p class="section-sub">Des automatisations simples, installées pour vous, qui travaillent pendant que vous vous occupez de vos clients.</p>
-        <div class="cards">
-          <article class="card">
-            <div class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        <div class="vtabs" id="vtabs">
+          <div class="vtabs-left">
+            <div class="vtabs-head">
+              <h2>Comment on peut vous aider</h2>
+              <span class="vtabs-label">(Services)</span>
             </div>
-            <h3>Automatisation des courriels</h3>
-            <p>Confirmations, rappels et suivis envoyés automatiquement à vos clients. Plus jamais un courriel oublié.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+            <div class="vtabs-list">
+              <button type="button" class="vtab active" data-index="0">
+                <span class="vtab-progress" aria-hidden="true"><i></i></span>
+                <span class="vtab-num" aria-hidden="true">/01</span>
+                <span class="vtab-body">
+                  <span class="vtab-title">Automatisation des courriels</span>
+                  <span class="vtab-desc"><span>Confirmations, rappels et suivis envoyés automatiquement à vos clients. Plus jamais un courriel oublié.</span></span>
+                </span>
+              </button>
+              <button type="button" class="vtab" data-index="1">
+                <span class="vtab-progress" aria-hidden="true"><i></i></span>
+                <span class="vtab-num" aria-hidden="true">/02</span>
+                <span class="vtab-body">
+                  <span class="vtab-title">Prise de rendez-vous automatisée</span>
+                  <span class="vtab-desc"><span>Vos clients réservent en ligne 24/7. Votre agenda se remplit tout seul, synchronisé à votre calendrier.</span></span>
+                </span>
+              </button>
+              <button type="button" class="vtab" data-index="2">
+                <span class="vtab-progress" aria-hidden="true"><i></i></span>
+                <span class="vtab-num" aria-hidden="true">/03</span>
+                <span class="vtab-body">
+                  <span class="vtab-title">Amélioration de site web</span>
+                  <span class="vtab-desc"><span>Un site moderne, rapide et clair qui transforme vos visiteurs en clients.</span></span>
+                </span>
+              </button>
             </div>
-            <h3>Prise de rendez-vous automatisée</h3>
-            <p>Vos clients réservent en ligne 24/7. Votre agenda se remplit tout seul, synchronisé à votre calendrier.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="vtabs-right">
+            <div class="vtabs-gallery" id="vtabsGallery">
+              <div class="vtab-slide active">
+                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&auto=format&fit=crop" alt="Automatisation des courriels" loading="lazy">
+              </div>
+              <div class="vtab-slide">
+                <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1200&auto=format&fit=crop" alt="Prise de rendez-vous automatisée" loading="lazy">
+              </div>
+              <div class="vtab-slide">
+                <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?q=80&w=1200&auto=format&fit=crop" alt="Amélioration de site web" loading="lazy">
+              </div>
+              <div class="vtab-shade" aria-hidden="true"></div>
+              <div class="vtabs-arrows">
+                <button type="button" id="vtabPrev" aria-label="Service précédent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <button type="button" id="vtabNext" aria-label="Service suivant">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
             </div>
-            <h3>Amélioration de site web</h3>
-            <p>Un site moderne, rapide et clair qui transforme vos visiteurs en clients.</p>
-          </article>
+          </div>
         </div>
       </div>
     </section>
@@ -133,19 +133,19 @@
         <h2>Comment ça marche</h2>
         <p class="section-sub">Trois étapes, pas de jargon, pas de casse-tête.</p>
         <div class="steps">
-          <div class="step">
+          <div class="step" style="--bg:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1200&auto=format&fit=crop')">
             <div class="step-num">1</div>
             <h3>Appel découverte</h3>
             <p>On discute de vos besoins et des tâches qui vous font perdre du temps.</p>
           </div>
           <div class="step-arrow" aria-hidden="true">→</div>
-          <div class="step">
+          <div class="step" style="--bg:url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop')">
             <div class="step-num">2</div>
             <h3>Configuration</h3>
             <p>On installe et connecte vos automatisations à vos outils (courriel, agenda).</p>
           </div>
           <div class="step-arrow" aria-hidden="true">→</div>
-          <div class="step">
+          <div class="step" style="--bg:url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1200&auto=format&fit=crop')">
             <div class="step-num">3</div>
             <h3>Vous gagnez du temps</h3>
             <p>Vos systèmes roulent tout seuls. Vous vous concentrez sur votre métier.</p>
@@ -234,7 +234,7 @@
         <p class="footer-logo">Autom<span>via</span></p>
         <p class="footer-tag">Automatisation pour PME au Québec</p>
       </div>
-      <a href="mailto:felixlavigueur10@gmail.com" class="footer-mail">felixlavigueur10@gmail.com</a>
+      <a href="mailto:automvia@gmail.com" class="footer-mail">automvia@gmail.com</a>
       <a href="#reserver" class="btn btn-primary">Réserver un appel</a>
     </div>
     <p class="footer-copy">© <span id="year"></span> Automvia. Tous droits réservés.</p>
