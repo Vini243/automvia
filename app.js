@@ -7,7 +7,7 @@
   "use strict";
 
   // --- Configuration ---
-  var COURRIEL_NOTIFICATION = "felixlavigueur10@gmail.com";
+  var COURRIEL_NOTIFICATION = "automvia@gmail.com";
   var ENDPOINT = "https://formsubmit.co/ajax/" + COURRIEL_NOTIFICATION;
   var HEURE_DEBUT = 9;      // 9 h
   var HEURE_FIN = 17;       // dernier créneau : 16 h 30

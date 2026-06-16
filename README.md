@@ -15,7 +15,7 @@ Hébergé gratuitement sur **GitHub Pages** (site statique : HTML, CSS, JavaScri
 
 GitHub Pages n'a pas de base de données. Chaque réservation est donc :
 
-1. **Envoyée par courriel** à `felixlavigueur10@gmail.com` via [FormSubmit](https://formsubmit.co)
+1. **Envoyée par courriel** à `automvia@gmail.com` via [FormSubmit](https://formsubmit.co)
    (gratuit, sans compte). ⚠️ **À la toute première réservation**, FormSubmit envoie un
    courriel d'activation à cette adresse — il faut cliquer le lien une seule fois pour
    activer les envois.
