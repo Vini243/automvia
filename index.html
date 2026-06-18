@@ -195,9 +195,10 @@
 
           <!-- Étape 2 : formulaire -->
           <form class="booking-form" id="bookingForm" novalidate>
-            <h3 class="booking-label">3. Vos coordonnées</h3>
+            <h3 class="booking-label" id="formTitre">3. Vos coordonnées</h3>
+            <p class="change-hint" id="changeHint" hidden>Entrez le courriel utilisé lors de votre réservation et choisissez votre nouvelle date ci-dessus.</p>
             <div class="form-grid">
-              <div class="form-field">
+              <div class="form-field" id="champNom">
                 <label for="fNom">Nom <span class="req">*</span></label>
                 <input type="text" id="fNom" name="nom" autocomplete="name" required placeholder="Votre nom complet">
               </div>
@@ -205,11 +206,11 @@
                 <label for="fCourriel">Courriel <span class="req">*</span></label>
                 <input type="email" id="fCourriel" name="courriel" autocomplete="email" required placeholder="vous@entreprise.ca">
               </div>
-              <div class="form-field">
+              <div class="form-field" id="champEntreprise">
                 <label for="fEntreprise">Nom de l'entreprise <span class="req">*</span></label>
                 <input type="text" id="fEntreprise" name="entreprise" autocomplete="organization" required placeholder="Votre entreprise">
               </div>
-              <div class="form-field form-field-full">
+              <div class="form-field form-field-full" id="champMessage">
                 <label for="fMessage">Message <span class="optional">(optionnel)</span></label>
                 <textarea id="fMessage" name="message" rows="4" placeholder="Parlez-nous brièvement de vos besoins…"></textarea>
               </div>
@@ -223,7 +224,10 @@
 
             <div class="booking-summary" id="bookingSummary" hidden></div>
             <p class="form-error" id="formError" hidden></p>
-            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">Confirmer ma réservation</button>
+            <div class="booking-actions">
+              <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">Confirmer ma réservation</button>
+              <button type="button" class="btn btn-ghost btn-lg" id="changeBtn">Changer ma réservation</button>
+            </div>
           </form>
         </div>
 
@@ -234,7 +238,7 @@
           </div>
           <h3>Merci! Votre appel est réservé.</h3>
           <p id="confirmationDetails"></p>
-          <p>Vous recevrez une confirmation par courriel.</p>
+          <p id="confirmationMail">Vous recevrez une confirmation par courriel.</p>
           <button type="button" class="btn btn-ghost" id="newBookingBtn">Faire une autre réservation</button>
         </div>
       </div>

@@ -717,6 +717,19 @@ h1, h2, h3 { line-height: 1.2; font-weight: 700; }
 }
 #submitBtn:disabled { opacity: .6; cursor: wait; transform: none; }
 
+/* Rangée de boutons : Confirmer + Changer ma réservation */
+.booking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+.change-hint {
+  font-size: .9rem;
+  color: var(--bleu-vif);
+  margin: -.25rem 0 1rem;
+}
+
 /* Confirmation */
 .confirmation {
   max-width: 560px;
