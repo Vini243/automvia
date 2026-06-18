@@ -794,3 +794,12 @@ h1, h2, h3 { line-height: 1.2; font-weight: 700; }
   .nav-burger { padding: .35rem; }
   .nav-shell { padding: 0 .9rem; }
 }
+
+/* ===== Champ anti-pourriel (honeypot) — hors écran, jamais visible ===== */
+.hp-wrap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

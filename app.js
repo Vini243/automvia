@@ -7,8 +7,15 @@
   "use strict";
 
   // --- Configuration ---
+  // Pour CACHER votre courriel du code public, FormSubmit fournit un
+  // identifiant unique une fois le formulaire activé :
+  //   1) Envoyez une réservation de test → cliquez le lien d'activation reçu par courriel.
+  //   2) Sur https://formsubmit.co, copiez votre « unique string ».
+  //   3) Collez-la ci-dessous (ex. "a1b2c3d4e5f6").
+  // Tant qu'elle est vide, le courriel ci-dessous est utilisé directement.
+  var CODE_FORMSUBMIT = "";
   var COURRIEL_NOTIFICATION = "automvia@gmail.com";
-  var ENDPOINT = "https://formsubmit.co/ajax/" + COURRIEL_NOTIFICATION;
+  var ENDPOINT = "https://formsubmit.co/ajax/" + (CODE_FORMSUBMIT || COURRIEL_NOTIFICATION);
   var HEURE_DEBUT = 9;      // 9 h
   var HEURE_FIN = 17;       // dernier créneau : 16 h 30
   var MOIS_MAX = 2;         // réservation jusqu'à 2 mois d'avance
@@ -160,6 +167,10 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     formError.hidden = true;
+
+    // Anti-pourriel : si le champ honeypot est rempli, c'est un robot.
+    // On interrompt silencieusement, sans rien enregistrer ni envoyer.
+    if ($("fSiteWeb") && $("fSiteWeb").value) { return; }
 
     var nom = $("fNom").value.trim();
     var courriel = $("fCourriel").value.trim();

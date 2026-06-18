@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ===== En-têtes de sécurité (compatibles GitHub Pages) ===== -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https://formsubmit.co; form-action 'self' https://formsubmit.co; base-uri 'self'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
   <title>Automvia — Automatisation pour PME au Québec</title>
   <meta name="description" content="Automvia configure vos courriels automatiques et votre prise de rendez-vous en ligne. Récupérez votre temps. Agence d'automatisation pour PME au Québec.">
   <meta name="theme-color" content="#050507">
@@ -207,6 +212,13 @@
                 <textarea id="fMessage" name="message" rows="4" placeholder="Parlez-nous brièvement de vos besoins…"></textarea>
               </div>
             </div>
+
+            <!-- Anti-pourriel : invisible pour les humains, rempli par les robots. -->
+            <div class="hp-wrap" aria-hidden="true">
+              <label for="fSiteWeb">Laissez ce champ vide</label>
+              <input type="text" id="fSiteWeb" name="_honey" tabindex="-1" autocomplete="off">
+            </div>
+
             <div class="booking-summary" id="bookingSummary" hidden></div>
             <p class="form-error" id="formError" hidden></p>
             <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">Confirmer ma réservation</button>
