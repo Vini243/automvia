@@ -19,6 +19,7 @@
   var HEURE_DEBUT = 9;      // 9 h
   var HEURE_FIN = 17;       // dernier créneau : 16 h 30
   var MOIS_MAX = 2;         // réservation jusqu'à 2 mois d'avance
+  var DELAI_MIN_H = 24;     // réservation au moins 24 h à l'avance
   var CLE_STOCKAGE = "automvia_reservations";
 
   var MOIS_FR = ["janvier", "février", "mars", "avril", "mai", "juin",
@@ -73,6 +74,28 @@
     });
   }
 
+  // Date/heure exacte d'un créneau ("AAAA-MM-JJ" + "HH:MM").
+  function dateHeure(cle, heure) {
+    var p = cle.split("-");
+    var t = heure.split(":");
+    return new Date(+p[0], +p[1] - 1, +p[2], +t[0], +t[1], 0, 0);
+  }
+
+  // Limite minimale : un créneau doit être au moins DELAI_MIN_H à l'avance.
+  function limiteMin() {
+    return new Date(Date.now() + DELAI_MIN_H * 3600 * 1000);
+  }
+
+  // Un courriel ou un nom d'entreprise ne peut pas avoir deux réservations.
+  function dejaReserve(courriel, entreprise) {
+    var c = courriel.trim().toLowerCase();
+    var e = entreprise.trim().toLowerCase();
+    return lireReservations().some(function (r) {
+      return (r.courriel && r.courriel.trim().toLowerCase() === c) ||
+        (r.entreprise && r.entreprise.trim().toLowerCase() === e);
+    });
+  }
+
   // --- Calendrier ---
   function rendreCalendrier() {
     var annee = moisAffiche.getFullYear();
@@ -94,6 +117,7 @@
       calDays.appendChild(vide);
     }
 
+    var lim = limiteMin();
     var nbJours = new Date(annee, mois + 1, 0).getDate();
     for (var j = 1; j <= nbJours; j++) {
       var d = new Date(annee, mois, j);
@@ -101,7 +125,9 @@
       btn.type = "button";
       btn.textContent = j;
       var weekend = d.getDay() === 0 || d.getDay() === 6;
-      btn.disabled = weekend || d < aujourdhui;
+      // Dernier créneau du jour (16 h 30) : si déjà sous la limite, jour complet indisponible.
+      var dernierCreneau = new Date(annee, mois, j, HEURE_FIN - 1, 30);
+      btn.disabled = weekend || d < aujourdhui || dernierCreneau < lim;
       if (dateChoisie === cleDate(d)) btn.classList.add("selected");
       btn.addEventListener("click", (function (dd) {
         return function () {
@@ -134,13 +160,15 @@
     }
     slotsDate.textContent = "Disponibilités le " + dateLisible(dateChoisie) + " :";
 
+    var lim = limiteMin();
     for (var h = HEURE_DEBUT; h < HEURE_FIN; h++) {
       [0, 30].forEach(function (m) {
         var valeur = String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
         var btn = document.createElement("button");
         btn.type = "button";
         btn.textContent = formatHeure(h, m);
-        btn.disabled = creneauPris(dateChoisie, valeur);
+        // Indisponible si déjà pris OU à moins de 24 h.
+        btn.disabled = creneauPris(dateChoisie, valeur) || dateHeure(dateChoisie, valeur) < lim;
         if (heureChoisie === valeur) btn.classList.add("selected");
         btn.addEventListener("click", function () {
           heureChoisie = valeur;
@@ -189,6 +217,20 @@
       afficherErreur("Veuillez entrer une adresse courriel valide.");
       return;
     }
+    // Délai minimal de 24 h (re-vérifié ici au cas où le temps a passé).
+    if (dateHeure(dateChoisie, heureChoisie) < limiteMin()) {
+      afficherErreur("Les réservations doivent être faites au moins 24 h à l'avance. Veuillez choisir un créneau plus tardif.");
+      heureChoisie = null;
+      rendreCalendrier();
+      rendreCreneaux();
+      majResume();
+      return;
+    }
+    // Anti-doublon : un même courriel ou une même entreprise ne peut pas réserver deux fois.
+    if (dejaReserve(courriel, entreprise)) {
+      afficherErreur("Une réservation est déjà enregistrée pour ce courriel ou cette entreprise. Écrivez-nous à automvia@gmail.com pour la modifier.");
+      return;
+    }
 
     var reservation = {
       nom: nom,
@@ -218,6 +260,12 @@
         _subject: "Nouvelle réservation Automvia — " + nom,
         _template: "table",
         _captcha: "false",
+        _replyto: courriel,
+        // Confirmation automatique envoyée au client.
+        _autoresponse: "Bonjour,\n\nNous confirmons qu'Automvia a bien reçu votre demande de réservation d'appel découverte le " +
+          dateLisible(dateChoisie) + " à " + formatHeure(+p[0], +p[1]) + ".\n\n" +
+          "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez modifier ou annuler, répondez simplement à ce courriel.\n\n" +
+          "Merci de votre intérêt!\n— L'équipe Automvia",
         Nom: nom,
         Courriel: courriel,
         Entreprise: entreprise,
