@@ -13,7 +13,7 @@
   //   2) Sur https://formsubmit.co, copiez votre « unique string ».
   //   3) Collez-la ci-dessous (ex. "a1b2c3d4e5f6").
   // Tant qu'elle est vide, le courriel ci-dessous est utilisé directement.
-  var CODE_FORMSUBMIT = "";
+  var CODE_FORMSUBMIT = "f442e7459db0b0c3ff6eecdc413e92af";
   var COURRIEL_NOTIFICATION = "automvia@gmail.com";
   var ENDPOINT = "https://formsubmit.co/ajax/" + (CODE_FORMSUBMIT || COURRIEL_NOTIFICATION);
   var HEURE_DEBUT = 9;      // 9 h
