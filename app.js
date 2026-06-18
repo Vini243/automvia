@@ -20,6 +20,7 @@
   var HEURE_FIN = 17;       // dernier créneau : 16 h 30
   var MOIS_MAX = 2;         // réservation jusqu'à 2 mois d'avance
   var DELAI_MIN_H = 24;     // réservation au moins 24 h à l'avance
+  var DELAI_MODIF_MIN = 30; // délai (minutes) à respecter entre deux modifications
   var CLE_STOCKAGE = "automvia_reservations";
 
   var MOIS_FR = ["janvier", "février", "mars", "avril", "mai", "juin",
@@ -42,6 +43,7 @@
   var summary = $("bookingSummary"), submitBtn = $("submitBtn");
   var bookingEl = $("booking"), confirmEl = $("confirmation");
   var confirmDetails = $("confirmationDetails");
+  var existingEl = $("bookingExisting");
 
   // --- Utilitaires ---
   function cleDate(d) {
@@ -86,14 +88,21 @@
     return new Date(Date.now() + DELAI_MIN_H * 3600 * 1000);
   }
 
-  // Un courriel ou un nom d'entreprise ne peut pas avoir deux réservations.
-  function dejaReserve(courriel, entreprise) {
+  // Retrouve la réservation existante d'un même courriel OU entreprise.
+  // Retourne son index dans la liste, ou -1 s'il n'y en a pas.
+  // Sert à DÉPLACER un rendez-vous (remplacement) au lieu de créer un doublon.
+  function indexReservation(courriel, entreprise) {
     var c = courriel.trim().toLowerCase();
     var e = entreprise.trim().toLowerCase();
-    return lireReservations().some(function (r) {
-      return (r.courriel && r.courriel.trim().toLowerCase() === c) ||
-        (r.entreprise && r.entreprise.trim().toLowerCase() === e);
-    });
+    var liste = lireReservations();
+    for (var i = 0; i < liste.length; i++) {
+      var r = liste[i];
+      if ((r.courriel && r.courriel.trim().toLowerCase() === c) ||
+        (r.entreprise && r.entreprise.trim().toLowerCase() === e)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   // --- Calendrier ---
@@ -191,6 +200,20 @@
     }
   }
 
+  // Bannière : rappelle au visiteur qu'il a déjà un rendez-vous (sur cet appareil)
+  // et lui explique comment le déplacer sans créer de doublon.
+  function majBanniereExistante() {
+    if (!existingEl) return;
+    var liste = lireReservations();
+    if (!liste.length) { existingEl.hidden = true; return; }
+    var r = liste[liste.length - 1]; // la plus récente
+    var p = r.heure.split(":");
+    existingEl.hidden = false;
+    existingEl.innerHTML = "Vous avez déjà un rendez-vous le <strong>" +
+      dateLisible(r.date) + " à " + formatHeure(+p[0], +p[1]) +
+      "</strong>. Pour le déplacer, choisissez un nouveau créneau ci-dessous et confirmez avec le même courriel — aucun doublon ne sera créé.";
+  }
+
   // --- Soumission ---
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -226,10 +249,27 @@
       majResume();
       return;
     }
-    // Anti-doublon : un même courriel ou une même entreprise ne peut pas réserver deux fois.
-    if (dejaReserve(courriel, entreprise)) {
-      afficherErreur("Une réservation est déjà enregistrée pour ce courriel ou cette entreprise. Écrivez-nous à automvia@gmail.com pour la modifier.");
-      return;
+    // Réservation existante pour ce courriel/entreprise ? On DÉPLACE au lieu de doubler.
+    var liste = lireReservations();
+    var idx = indexReservation(courriel, entreprise);
+    var estModif = idx !== -1;
+
+    if (estModif) {
+      var existante = liste[idx];
+      // Verrou anti-spam : un délai doit s'écouler entre deux modifications.
+      if (existante.modifieLe) {
+        var restantMs = DELAI_MODIF_MIN * 60000 - (Date.now() - new Date(existante.modifieLe).getTime());
+        if (restantMs > 0) {
+          afficherErreur("Vous avez déjà modifié ce rendez-vous récemment. Réessayez dans " +
+            Math.ceil(restantMs / 60000) + " min, ou écrivez-nous à automvia@gmail.com.");
+          return;
+        }
+      }
+      // Même créneau : rien à changer, on évite un courriel inutile.
+      if (existante.date === dateChoisie && existante.heure === heureChoisie) {
+        afficherErreur("C'est déjà votre rendez-vous actuel. Choisissez un autre créneau pour le déplacer.");
+        return;
+      }
     }
 
     var reservation = {
@@ -239,46 +279,50 @@
       date: dateChoisie,
       heure: heureChoisie,
       message: message,
-      statut: "En attente",
-      creeLe: new Date().toISOString()
+      statut: estModif ? "Modifiée" : "En attente",
+      creeLe: estModif ? liste[idx].creeLe : new Date().toISOString(),
+      modifieLe: estModif ? new Date().toISOString() : null
     };
 
     submitBtn.disabled = true;
-    submitBtn.textContent = "Réservation en cours…";
+    submitBtn.textContent = estModif ? "Modification en cours…" : "Réservation en cours…";
 
-    // 1) Enregistrement local (le créneau devient indisponible sur cet appareil)
-    var liste = lireReservations();
-    liste.push(reservation);
+    // 1) Enregistrement local : on remplace (modif) ou on ajoute (nouvelle).
+    if (estModif) { liste[idx] = reservation; } else { liste.push(reservation); }
     try { localStorage.setItem(CLE_STOCKAGE, JSON.stringify(liste)); } catch (err) { /* stockage plein ou bloqué */ }
 
     // 2) Notification courriel à Automvia (FormSubmit)
     var p = heureChoisie.split(":");
+    var quand = dateLisible(dateChoisie) + " à " + formatHeure(+p[0], +p[1]);
     fetch(ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
-        _subject: "Nouvelle réservation Automvia — " + nom,
+        _subject: (estModif ? "Réservation MODIFIÉE" : "Nouvelle réservation") + " Automvia — " + nom,
         _template: "table",
         _captcha: "false",
         _replyto: courriel,
         // Confirmation automatique envoyée au client.
-        _autoresponse: "Bonjour,\n\nNous confirmons qu'Automvia a bien reçu votre demande de réservation d'appel découverte le " +
-          dateLisible(dateChoisie) + " à " + formatHeure(+p[0], +p[1]) + ".\n\n" +
-          "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez modifier ou annuler, répondez simplement à ce courriel.\n\n" +
-          "Merci de votre intérêt!\n— L'équipe Automvia",
+        _autoresponse: estModif
+          ? "Bonjour,\n\nVotre rendez-vous avec Automvia a bien été déplacé au " + quand + ".\n\n" +
+            "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez le modifier de nouveau ou l'annuler, répondez simplement à ce courriel.\n\n" +
+            "Merci!\n— L'équipe Automvia"
+          : "Bonjour,\n\nNous confirmons qu'Automvia a bien reçu votre demande de réservation d'appel découverte le " + quand + ".\n\n" +
+            "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez modifier ou annuler, répondez simplement à ce courriel.\n\n" +
+            "Merci de votre intérêt!\n— L'équipe Automvia",
         Nom: nom,
         Courriel: courriel,
         Entreprise: entreprise,
         Date: dateLisible(dateChoisie),
         Heure: formatHeure(+p[0], +p[1]),
         Message: message || "(aucun)",
-        Statut: "En attente"
+        Statut: estModif ? "Modifiée" : "En attente"
       })
     }).catch(function () {
       /* Même si l'envoi échoue (hors ligne, bloqueur), la réservation
          locale est conservée — on ne bloque pas le client. */
     }).finally(function () {
-      afficherConfirmation(reservation);
+      afficherConfirmation(reservation, estModif);
     });
   });
 
@@ -288,13 +332,20 @@
     formError.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  function afficherConfirmation(r) {
+  function afficherConfirmation(r, estModif) {
     var p = r.heure.split(":");
+    var titre = confirmEl.querySelector("h3");
+    if (titre) {
+      titre.textContent = estModif
+        ? "C'est fait! Votre rendez-vous a été déplacé."
+        : "Merci! Votre appel est réservé.";
+    }
     confirmDetails.textContent = r.nom + " — " + dateLisible(r.date) + " à " +
       formatHeure(+p[0], +p[1]) + " (30 minutes)";
     bookingEl.hidden = true;
     confirmEl.hidden = false;
     confirmEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    majBanniereExistante();
   }
 
   $("newBookingBtn").addEventListener("click", function () {
@@ -419,4 +470,5 @@
   $("year").textContent = new Date().getFullYear();
   rendreCalendrier();
   rendreCreneaux();
+  majBanniereExistante();
 })();

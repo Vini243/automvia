@@ -695,6 +695,20 @@ h1, h2, h3 { line-height: 1.2; font-weight: 700; }
   font-weight: 500;
   margin-bottom: 1.5rem;
 }
+
+/* Bannière « vous avez déjà un rendez-vous » (rappel + invitation à déplacer) */
+.booking-existing {
+  background: var(--bleu-pale);
+  border: 1px solid rgba(96, 165, 250, .25);
+  border-left: 3px solid var(--bleu-vif);
+  border-radius: 10px;
+  padding: .9rem 1.15rem;
+  font-size: .92rem;
+  line-height: 1.5;
+  color: var(--encre);
+  margin-bottom: 1.75rem;
+}
+.booking-existing strong { color: var(--bleu-vif); font-weight: 600; }
 .form-error {
   color: #f87171;
   font-size: .9rem;
