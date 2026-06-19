@@ -96,6 +96,28 @@
     return new Date(Date.now() + DELAI_MIN_H * 3600 * 1000);
   }
 
+  // Lien « Ajouter à Google Agenda » (événement pré-rempli, 30 min, fuseau Québec).
+  // Inclus dans le courriel de notification : Automvia clique pour l'ajouter à son agenda.
+  function lienAgenda(r) {
+    var jour = r.date.replace(/-/g, "");            // 2026-06-23 -> 20260623
+    var t = r.heure.split(":");
+    var debutMin = (+t[0]) * 60 + (+t[1]);
+    var finMin = debutMin + 30;
+    function hhmmss(min) {
+      return String(Math.floor(min / 60)).padStart(2, "0") + String(min % 60).padStart(2, "0") + "00";
+    }
+    var titre = "Appel découverte — " + r.nom + " (" + r.entreprise + ")";
+    var details = "Client : " + r.nom +
+      "\nCourriel : " + r.courriel +
+      "\nEntreprise : " + r.entreprise +
+      (r.message ? "\nMessage : " + r.message : "");
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+      "&text=" + encodeURIComponent(titre) +
+      "&dates=" + jour + "T" + hhmmss(debutMin) + "/" + jour + "T" + hhmmss(finMin) +
+      "&ctz=America/Toronto" +
+      "&details=" + encodeURIComponent(details);
+  }
+
   // Retrouve la réservation existante d'un même courriel OU entreprise.
   // Retourne son index dans la liste, ou -1 s'il n'y en a pas.
   // Sert à DÉPLACER un rendez-vous (remplacement) au lieu de créer un doublon.
@@ -368,16 +390,17 @@
           ? "Bonjour,\n\nVotre réservation Automvia a bien été mise à jour. Votre nouvelle date : " + quand + ".\n\n" +
             "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez la modifier de nouveau ou l'annuler, répondez simplement à ce courriel.\n\n" +
             "Merci!\n— L'équipe Automvia"
-          : "Bonjour,\n\nNous confirmons qu'Automvia a bien reçu votre demande de réservation d'appel découverte le " + quand + ".\n\n" +
-            "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez modifier ou annuler, répondez simplement à ce courriel.\n\n" +
-            "Merci de votre intérêt!\n— L'équipe Automvia",
+          : "Bonjour,\n\nMerci d'avoir choisi Automvia! Nous avons bien reçu votre réservation d'appel découverte le " + quand + ".\n\n" +
+            "Nous avons hâte de vous rencontrer pour en discuter. Si vous devez modifier ou annuler, répondez simplement à ce courriel.\n\n" +
+            "— L'équipe Automvia",
         Nom: reservation.nom,
         Courriel: reservation.courriel,
         Entreprise: reservation.entreprise,
         Date: dateLisible(reservation.date),
         Heure: formatHeure(+p[0], +p[1]),
         Message: reservation.message || "(aucun)",
-        Statut: estModif ? "Modifiée" : "En attente"
+        Statut: estModif ? "Modifiée" : "En attente",
+        "Ajouter a Google Agenda": lienAgenda(reservation)
       })
     }).catch(function () {
       /* Même si l'envoi échoue (hors ligne, bloqueur), la réservation
