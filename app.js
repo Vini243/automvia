@@ -16,6 +16,10 @@
   var CODE_FORMSUBMIT = "f442e7459db0b0c3ff6eecdc413e92af";
   var COURRIEL_NOTIFICATION = "automvia@gmail.com";
   var ENDPOINT = "https://formsubmit.co/ajax/" + (CODE_FORMSUBMIT || COURRIEL_NOTIFICATION);
+  // Ajout AUTOMATIQUE au Google Agenda d'Automvia (via Google Apps Script).
+  // Collez ici l'URL « /exec » de votre script déployé. Tant que c'est vide,
+  // un lien « Ajouter à l'agenda » est plutôt inclus dans le courriel de notification.
+  var URL_AGENDA = "https://script.google.com/macros/s/AKfycbxPoKiCO0UQhkvlbZ96wpt6-MqjbUUR6qvKMM8W6ueScYvq5ur8Ee0aQAU90NzYgKODxA/exec";
   var HEURE_DEBUT = 9;      // 9 h
   var HEURE_FIN = 17;       // dernier créneau : 16 h 30
   var MOIS_MAX = 2;         // réservation jusqu'à 2 mois d'avance
@@ -372,36 +376,64 @@
     submitBtn.disabled = true;
     submitBtn.textContent = estModif ? "Mise à jour en cours…" : "Réservation en cours…";
 
+    // On garde l'ancienne réservation (pour mettre à jour l'agenda) avant de la remplacer.
+    var ancienne = (idx >= 0) ? liste[idx] : null;
     if (idx >= 0) { liste[idx] = reservation; } else { liste.push(reservation); }
     try { localStorage.setItem(CLE_STOCKAGE, JSON.stringify(liste)); } catch (err) { /* stockage plein ou bloqué */ }
 
     var p = reservation.heure.split(":");
     var quand = dateLisible(reservation.date) + " à " + formatHeure(+p[0], +p[1]);
+
+    // 1) Ajout/MISE À JOUR automatique dans le Google Agenda d'Automvia (si configuré).
+    if (URL_AGENDA) {
+      var charge = {
+        action: estModif ? "update" : "create",
+        nom: reservation.nom,
+        courriel: reservation.courriel,
+        entreprise: reservation.entreprise,
+        message: reservation.message || "",
+        date: reservation.date,
+        heure: reservation.heure
+      };
+      if (estModif && ancienne) {
+        charge.ancienneDate = ancienne.date;
+        charge.ancienneHeure = ancienne.heure;
+      }
+      // mode "no-cors" : requête simple, pas de préflight ; on ignore la réponse.
+      fetch(URL_AGENDA, { method: "POST", mode: "no-cors", body: JSON.stringify(charge) }).catch(function () { });
+    }
+
+    // 2) Notification courriel à Automvia + confirmation automatique au client (FormSubmit).
+    var corps = {
+      _subject: (estModif ? "Réservation MISE À JOUR" : "Nouvelle réservation") + " Automvia — " + reservation.nom,
+      _template: "table",
+      _captcha: "false",
+      _replyto: reservation.courriel,
+      _autoresponse: estModif
+        ? "Bonjour,\n\nVotre réservation Automvia a bien été mise à jour. Votre nouvelle date : " + quand + ".\n\n" +
+          "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez la modifier de nouveau ou l'annuler, répondez simplement à ce courriel.\n\n" +
+          "Merci!\n— L'équipe Automvia"
+        : "Bonjour,\n\nMerci d'avoir choisi Automvia! Nous avons bien reçu votre réservation d'appel découverte le " + quand + ".\n\n" +
+          "Nous avons hâte de vous rencontrer pour en discuter. Si vous devez modifier ou annuler, répondez simplement à ce courriel.\n\n" +
+          "— L'équipe Automvia",
+      Nom: reservation.nom,
+      Courriel: reservation.courriel,
+      Entreprise: reservation.entreprise,
+      Date: dateLisible(reservation.date),
+      Heure: formatHeure(+p[0], +p[1]),
+      Message: reservation.message || "(aucun)",
+      Statut: estModif ? "Modifiée" : "En attente"
+    };
+    // Lien manuel d'agenda SEULEMENT si l'ajout automatique n'est pas configuré
+    // (évite des doublons si Automvia cliquait le lien alors que l'auto est actif).
+    if (!URL_AGENDA) {
+      corps["Ajouter a Google Agenda"] = lienAgenda(reservation);
+    }
+
     fetch(ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        _subject: (estModif ? "Réservation MISE À JOUR" : "Nouvelle réservation") + " Automvia — " + reservation.nom,
-        _template: "table",
-        _captcha: "false",
-        _replyto: reservation.courriel,
-        // Confirmation automatique envoyée au client.
-        _autoresponse: estModif
-          ? "Bonjour,\n\nVotre réservation Automvia a bien été mise à jour. Votre nouvelle date : " + quand + ".\n\n" +
-            "Nous vous contacterons sous peu pour confirmer les détails. Si vous devez la modifier de nouveau ou l'annuler, répondez simplement à ce courriel.\n\n" +
-            "Merci!\n— L'équipe Automvia"
-          : "Bonjour,\n\nMerci d'avoir choisi Automvia! Nous avons bien reçu votre réservation d'appel découverte le " + quand + ".\n\n" +
-            "Nous avons hâte de vous rencontrer pour en discuter. Si vous devez modifier ou annuler, répondez simplement à ce courriel.\n\n" +
-            "— L'équipe Automvia",
-        Nom: reservation.nom,
-        Courriel: reservation.courriel,
-        Entreprise: reservation.entreprise,
-        Date: dateLisible(reservation.date),
-        Heure: formatHeure(+p[0], +p[1]),
-        Message: reservation.message || "(aucun)",
-        Statut: estModif ? "Modifiée" : "En attente",
-        "Ajouter a Google Agenda": lienAgenda(reservation)
-      })
+      body: JSON.stringify(corps)
     }).catch(function () {
       /* Même si l'envoi échoue (hors ligne, bloqueur), la réservation
          locale est conservée — on ne bloque pas le client. */
