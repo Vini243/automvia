@@ -830,3 +830,235 @@ h1, h2, h3 { line-height: 1.2; font-weight: 700; }
   height: 1px;
   overflow: hidden;
 }
+
+/* ============================================================
+   COUCHE PREMIUM — effets interactifs (gérés par effets.js)
+   Curseur lumineux, révélations, magnétisme, cartes 3D, grain,
+   barre de progression, compteurs, bandeau d'intégrations.
+   Tout est purement visuel : aucune incidence sur la réservation.
+   ============================================================ */
+
+:root {
+  --violet: #818cf8;
+  --cyan: #22d3ee;
+  --halo: rgba(96, 165, 250, .55);
+}
+
+/* ---- Barre de progression de lecture ---- */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--bleu-vif), var(--violet), var(--cyan));
+  box-shadow: 0 0 12px var(--halo);
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* ---- Grain filmique (texture subtile sur tout l'écran) ---- */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: .04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- Curseur lumineux (activé par JS sur souris fine) ---- */
+.cursor-dot, .cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 70;
+  display: none;
+  will-change: transform;
+}
+.cursor-dot {
+  width: 6px; height: 6px;
+  background: var(--bleu-vif);
+  box-shadow: 0 0 10px var(--halo);
+}
+.cursor-ring {
+  width: 34px; height: 34px;
+  border: 1.5px solid rgba(96, 165, 250, .55);
+  transition: width .25s ease, height .25s ease, background .25s ease, border-color .25s ease;
+}
+.cursor-ring.hovering { width: 56px; height: 56px; background: rgba(96, 165, 250, .08); border-color: var(--bleu-vif); }
+.cursor-ring.clic { width: 24px; height: 24px; }
+body.cursor-on { cursor: none; }
+body.cursor-on .cursor-dot,
+body.cursor-on .cursor-ring { display: block; }
+body.cursor-on input,
+body.cursor-on textarea,
+body.cursor-on select { cursor: text; }
+/* Zone réservation/pied de page : on désactive le curseur personnalisé et on
+   rétablit le curseur natif (plus pratique pour remplir le formulaire). */
+body.cursor-on.cursor-calme { cursor: auto; }
+body.cursor-on.cursor-calme .cursor-dot,
+body.cursor-on.cursor-calme .cursor-ring { display: none; }
+
+/* ---- Lueur interactive + parallaxe du hero ---- */
+.hero .container { transition: transform .5s cubic-bezier(.16, 1, .3, 1); will-change: transform; }
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(440px circle at var(--mx, 50%) var(--my, 35%), rgba(96, 165, 250, .16), transparent 70%);
+  transition: opacity .5s ease;
+}
+.hero:hover .hero-glow { opacity: 1; }
+
+/* ---- Mot-clé en dégradé scintillant ---- */
+.shimmer {
+  background: linear-gradient(100deg, var(--encre) 25%, var(--bleu-vif) 45%, var(--violet) 55%, var(--encre) 75%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmer 7s linear infinite;
+}
+@keyframes shimmer { to { background-position: -220% 0; } }
+
+/* ---- Effet de brillance qui traverse les boutons principaux ---- */
+.btn-primary { position: relative; overflow: hidden; isolation: isolate; }
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, .35) 50%, transparent 70%);
+  transform: translateX(-130%);
+  transition: transform .6s ease;
+}
+.btn-primary:hover::after { transform: translateX(130%); }
+
+/* ---- Statistiques du hero ---- */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem 3rem;
+  margin-top: 3rem;
+}
+.hstat { display: flex; flex-direction: column; align-items: center; gap: .2rem; }
+.hstat-num {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #ffffff, #93c5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.hstat-label { font-size: .82rem; color: var(--gris); max-width: 12rem; text-align: center; }
+
+/* ---- Bandeau d'intégrations (marquee infini) ---- */
+.logos {
+  padding: 2.5rem 0 2rem;
+  border-top: 1px solid var(--gris-pale);
+  border-bottom: 1px solid var(--gris-pale);
+  background: var(--fond-alt);
+}
+.logos-label {
+  text-align: center;
+  color: var(--gris);
+  font-size: .9rem;
+  max-width: 40rem;
+  margin: 0 auto 1.6rem;
+  padding: 0 1.25rem;
+}
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+  width: max-content;
+  animation: marquee 34s linear infinite;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  color: var(--gris);
+  font-weight: 600;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  opacity: .6;
+  transition: opacity .2s ease, color .2s ease;
+}
+.marquee-item:hover { opacity: 1; color: var(--encre); }
+.marquee-item svg { width: 18px; height: 18px; color: var(--bleu-vif); flex: none; }
+
+/* ---- Lueur d'ambiance derrière la section de réservation ---- */
+#reserver { position: relative; overflow: hidden; }
+#reserver::before {
+  content: "";
+  position: absolute;
+  top: -18%; left: 50%;
+  width: 62rem; height: 40rem;
+  transform: translateX(-50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(96, 165, 250, .1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+#reserver .container { position: relative; z-index: 1; }
+
+/* ---- Zoom doux de l'image de service au survol (effet « ken burns ») ---- */
+.vtab-slide img { transition: transform .8s cubic-bezier(.22, 1, .36, 1); }
+.vtabs-gallery:hover .vtab-slide.active img { transform: scale(1.05); }
+
+/* ---- Révélations au défilement (cachées seulement si JS est actif) ---- */
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(10px);
+  transition: opacity .9s cubic-bezier(.16, 1, .3, 1),
+              transform .9s cubic-bezier(.16, 1, .3, 1),
+              filter .9s ease;
+}
+html.js .reveal.in { opacity: 1; transform: none; filter: blur(0); }
+html.js .reveal-stagger > * { opacity: 0; }
+html.js .reveal-stagger.in > * { opacity: 1; animation: revStagger .7s cubic-bezier(.16, 1, .3, 1) backwards; }
+html.js .reveal-stagger.in > *:nth-child(1) { animation-delay: .05s; }
+html.js .reveal-stagger.in > *:nth-child(2) { animation-delay: .15s; }
+html.js .reveal-stagger.in > *:nth-child(3) { animation-delay: .25s; }
+html.js .reveal-stagger.in > *:nth-child(4) { animation-delay: .35s; }
+html.js .reveal-stagger.in > *:nth-child(5) { animation-delay: .45s; }
+@keyframes revStagger { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+/* ---- Respect des préférences de mouvement réduit ---- */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { display: none; }
+  .grain { display: none; }
+  .marquee-track { animation: none; }
+  .shimmer {
+    animation: none;
+    background: none;
+    color: var(--bleu-vif);
+    -webkit-text-fill-color: var(--bleu-vif);
+  }
+  .btn-primary::after { display: none; }
+  .vtabs-gallery:hover .vtab-slide.active img { transform: none; }
+  html.js .reveal,
+  html.js .reveal.in { opacity: 1; transform: none; filter: none; transition: none; }
+  html.js .reveal-stagger > *,
+  html.js .reveal-stagger.in > * { opacity: 1; animation: none; }
+  .hero .container { transition: none; }
+}

@@ -19,6 +19,12 @@
 </head>
 <body>
 
+  <!-- ===== Couche premium : barre de progression, grain, curseur ===== -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
   <!-- ===== Projecteurs animés (s'estompent au défilement) ===== -->
   <div class="spotlights" id="spotlights" aria-hidden="true">
     <span></span><span></span><span></span>
@@ -46,6 +52,7 @@
   <main>
     <!-- ===== SECTION 1 : ACCUEIL ===== -->
     <section class="hero" id="accueil">
+      <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
       <div class="container">
         <a href="#reserver" class="hero-badge anim anim-1">
           <span class="hero-badge-text">Prise de rendez-vous</span>
@@ -57,7 +64,7 @@
             </span>
           </span>
         </a>
-        <h1 class="anim anim-2">Automatisez votre PME.<br>Récupérez votre temps.</h1>
+        <h1 class="anim anim-2">Automatisez votre PME.<br>Récupérez votre <span class="shimmer">temps</span>.</h1>
         <p class="hero-sub anim anim-3">Automvia configure vos courriels automatiques et votre prise de rendez-vous en ligne, pour que vous arrêtiez de perdre du temps — et des clients — sur les tâches répétitives.</p>
         <div class="hero-actions anim anim-4">
           <span class="btn-frame">
@@ -66,14 +73,40 @@
           <a href="#comment" class="btn btn-ghost btn-lg">Voir comment ça marche</a>
         </div>
 
-        <p class="hero-tools anim anim-5">On se branche aux outils que vous utilisez déjà — <strong>Gmail</strong>, <strong>Outlook</strong>, <strong>Google Agenda</strong> et plus.</p>
+        <div class="hero-stats anim anim-5">
+          <div class="hstat">
+            <span class="hstat-num" data-count="24" data-suffix=" h">0 h</span>
+            <span class="hstat-label">Pour vous répondre</span>
+          </div>
+          <div class="hstat">
+            <span class="hstat-num">Gratuit</span>
+            <span class="hstat-label">Premier appel découverte</span>
+          </div>
+          <div class="hstat">
+            <span class="hstat-num" data-count="100" data-suffix=" %">0 %</span>
+            <span class="hstat-label">Pensé pour les PME d'ici</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Bandeau d'intégrations (défilement infini) ===== -->
+    <section class="logos" aria-label="Outils compatibles">
+      <p class="logos-label">On se branche aux outils que vous utilisez déjà — sans rien changer à vos habitudes.</p>
+      <div class="marquee">
+        <div class="marquee-track">
+          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.4 4.6 1.4 5.6 6 6-4.6.4-5.6 1.4-6 6-.4-4.6-1.4-5.6-6-6 4.6-.4 5.6-1.4 6-6z"/></svg>Gmail</span>
+          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.4 4.6 1.4 5.6 6 6-4.6.4-5.6 1.4-6 6-.4-4.6-1.4-5.6-6-6 4.6-.4 5.6-1.4 6-6z"/></svg>Outlook</span>
+          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.4 4.6 1.4 5.6 6 6-4.6.4-5.6 1.4-6 6-.4-4.6-1.4-5.6-6-6 4.6-.4 5.6-1.4 6-6z"/></svg>Google Agenda</span>
+          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.4 4.6 1.4 5.6 6 6-4.6.4-5.6 1.4-6 6-.4-4.6-1.4-5.6-6-6 4.6-.4 5.6-1.4 6-6z"/></svg>Calendly</span>
+        </div>
       </div>
     </section>
 
     <!-- ===== SECTION 2 : SERVICES (onglets verticaux + galerie) ===== -->
     <section class="section" id="services">
       <div class="container">
-        <div class="vtabs" id="vtabs">
+        <div class="vtabs reveal" id="vtabs">
           <div class="vtabs-left">
             <div class="vtabs-head">
               <h2>Comment on peut vous aider</h2>
@@ -135,22 +168,22 @@
     <!-- ===== SECTION 3 : COMMENT ÇA MARCHE ===== -->
     <section class="section section-alt" id="comment">
       <div class="container">
-        <h2>Comment ça marche</h2>
-        <p class="section-sub">Trois étapes, pas de jargon, pas de casse-tête.</p>
-        <div class="steps">
-          <div class="step" style="--bg:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1200&auto=format&fit=crop')">
+        <h2 class="reveal">Comment ça marche</h2>
+        <p class="section-sub reveal">Trois étapes, pas de jargon, pas de casse-tête.</p>
+        <div class="steps reveal-stagger">
+          <div class="step" data-tilt style="--bg:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1200&auto=format&fit=crop')">
             <div class="step-num">1</div>
             <h3>Appel découverte</h3>
             <p>On discute de vos besoins et des tâches qui vous font perdre du temps.</p>
           </div>
           <div class="step-arrow" aria-hidden="true">→</div>
-          <div class="step" style="--bg:url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop')">
+          <div class="step" data-tilt style="--bg:url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop')">
             <div class="step-num">2</div>
             <h3>Configuration</h3>
             <p>On installe et connecte vos automatisations à vos outils (courriel, agenda).</p>
           </div>
           <div class="step-arrow" aria-hidden="true">→</div>
-          <div class="step" style="--bg:url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1200&auto=format&fit=crop')">
+          <div class="step" data-tilt style="--bg:url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1200&auto=format&fit=crop')">
             <div class="step-num">3</div>
             <h3>Vous gagnez du temps</h3>
             <p>Vos systèmes roulent tout seuls. Vous vous concentrez sur votre métier.</p>
@@ -162,12 +195,12 @@
     <!-- ===== SECTION 4 : RÉSERVER ===== -->
     <section class="section" id="reserver">
       <div class="container">
-        <h2>Prêt à automatiser? Réservez votre appel découverte.</h2>
-        <p class="section-sub">Le système de réservation que vous utilisez ici, c'est exactement le genre d'outil qu'on installe chez vous.</p>
+        <h2 class="reveal">Prêt à automatiser? Réservez votre appel découverte.</h2>
+        <p class="section-sub reveal">Le système de réservation que vous utilisez ici, c'est exactement le genre d'outil qu'on installe chez vous.</p>
 
         <div class="booking-existing" id="bookingExisting" hidden></div>
 
-        <div class="booking" id="booking">
+        <div class="booking reveal" id="booking">
           <!-- Étape 1 : date + heure -->
           <div class="booking-grid">
             <div class="booking-panel">
@@ -259,5 +292,6 @@
   </footer>
 
   <script src="app.js"></script>
+  <script src="effets.js"></script>
 </body>
 </html>
