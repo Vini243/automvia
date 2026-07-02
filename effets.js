@@ -112,6 +112,31 @@
     });
   }
 
+  /* ---------- 3c. Lien de navigation actif (scroll-spy) ----------
+     Souligne le lien de la section actuellement visible. Purement
+     visuel : la navigation fonctionne pareil si ce bloc échoue. */
+  var liensNav = $$(".nav-links a");
+  if (liensNav.length && "IntersectionObserver" in window) {
+    var parId = {};
+    liensNav.forEach(function (a) {
+      var id = (a.getAttribute("href") || "").replace("#", "");
+      if (id) parId[id] = a;
+    });
+    var sectionsNav = Object.keys(parId)
+      .map(function (id) { return document.getElementById(id); })
+      .filter(Boolean);
+    var obsNav = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) {
+        if (e.isIntersecting) {
+          liensNav.forEach(function (a) { a.classList.remove("active"); });
+          var lien = parId[e.target.id];
+          if (lien) lien.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    sectionsNav.forEach(function (s) { obsNav.observe(s); });
+  }
+
   /* ===== Effets « gourmands » : souris fine + mouvement autorisé ===== */
   if (souris && !reduit) {
 
@@ -134,7 +159,7 @@
       };
       requestAnimationFrame(suivre);
 
-      var interactifs = "a, button, input, textarea, select, .vtab, .step, .vtabs-gallery";
+      var interactifs = "a, button, input, textarea, select, .vtab, .process-row, .vtabs-gallery";
       document.addEventListener("mouseover", function (e) {
         if (e.target.closest && e.target.closest(interactifs)) anneau.classList.add("hovering");
       });
