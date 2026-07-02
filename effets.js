@@ -1,13 +1,11 @@
-/* ===== Automvia — couche d'effets premium =====
-   Effets purement visuels et interactifs, AUCUNE logique de
-   réservation ici (volontairement isolé d'app.js : si app.js
-   tombe en erreur, ces effets continuent de fonctionner, et
-   inversement).
+/* ===== Automvia — couche d'effets et d'interactions =====
+   Tout ce qui est visuel ou interactif MAIS sans lien avec la
+   réservation (app.js reste isolé : si l'un tombe en erreur,
+   l'autre continue de fonctionner).
 
-   Modules : barre de progression, révélations au défilement,
-   compteurs animés, curseur lumineux, lueur + parallaxe du hero,
-   boutons magnétiques, cartes 3D. Tout respecte
-   prefers-reduced-motion et se désactive sur écran tactile. */
+   Modules : intro, barre de progression, révélations, compteurs,
+   scroll-spy, calculatrice d'heures perdues, FAQ, CTA mobile,
+   curseur lumineux. Tout respecte prefers-reduced-motion. */
 
 (function () {
   "use strict";
@@ -17,13 +15,42 @@
 
   var reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var souris = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var mobile = window.matchMedia("(max-width: 840px)");
 
   var $ = function (sel, ctx) { return (ctx || document).querySelector(sel); };
   var $$ = function (sel, ctx) {
     return Array.prototype.slice.call((ctx || document).querySelectorAll(sel));
   };
 
-  /* ---------- 1. Barre de progression de lecture ---------- */
+  /* ---------- Formats de nombres (fr-CA) ---------- */
+  function fmtInt(n) {
+    var v = Math.round(n);
+    var neg = v < 0 ? "-" : "";
+    return neg + String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  }
+  function fmt1(n) {
+    var v = Math.round(n * 10) / 10;
+    var i = Math.floor(v);
+    var d = Math.round((v - i) * 10);
+    return fmtInt(i) + "," + d;
+  }
+
+  /* ---------- 1. Intro : wordmark qui se fond (une fois par session) ---------- */
+  var intro = document.getElementById("introOverlay");
+  if (intro) {
+    var dejaVu = false;
+    try { dejaVu = !!sessionStorage.getItem("amvIntroSeen"); } catch (e) { }
+    if (!reduit && !dejaVu) {
+      intro.hidden = false;
+      setTimeout(function () { intro.classList.add("fade"); }, 340);
+      setTimeout(function () {
+        intro.hidden = true;
+        try { sessionStorage.setItem("amvIntroSeen", "1"); } catch (e) { }
+      }, 640);
+    }
+  }
+
+  /* ---------- 2. Barre de progression de lecture ---------- */
   var barre = document.getElementById("scrollProgress");
   if (barre) {
     var majBarre = function () {
@@ -37,7 +64,7 @@
     majBarre();
   }
 
-  /* ---------- 2. Révélations au défilement ---------- */
+  /* ---------- 3. Révélations au défilement ---------- */
   var aReveler = $$(".reveal, .reveal-stagger");
   if (aReveler.length) {
     if (reduit || !("IntersectionObserver" in window)) {
@@ -50,24 +77,25 @@
             obsReveal.unobserve(e.target);
           }
         });
-      }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
+      }, { threshold: 0.14, rootMargin: "0px 0px -6% 0px" });
       aReveler.forEach(function (el) { obsReveal.observe(el); });
     }
   }
 
-  /* ---------- 3. Compteurs animés ---------- */
-  var compteurs = $$("[data-count]");
+  /* ---------- 4. Compteurs animés (data-count-from / data-count-to) ---------- */
+  var compteurs = $$("[data-count-to]");
   if (compteurs.length) {
     var animerCompteur = function (el) {
-      var cible = parseFloat(el.getAttribute("data-count")) || 0;
-      var suffixe = el.getAttribute("data-suffix") || "";
-      if (reduit) { el.textContent = cible + suffixe; return; }
-      var debut = null, duree = 1400;
+      var cible = parseFloat(el.getAttribute("data-count-to")) || 0;
+      var depart = parseFloat(el.getAttribute("data-count-from") || "0");
+      var suffixe = el.getAttribute("data-count-suffix") || "";
+      if (reduit) { el.textContent = fmtInt(cible) + suffixe; return; }
+      var debut = null, duree = 1300;
       var pas = function (t) {
         if (debut === null) debut = t;
         var prog = Math.min((t - debut) / duree, 1);
-        var adouci = 1 - Math.pow(1 - prog, 3); // ease-out cubique
-        el.textContent = Math.round(cible * adouci) + suffixe;
+        var adouci = 1 - Math.pow(1 - prog, 3);
+        el.textContent = fmtInt(depart + (cible - depart) * adouci) + suffixe;
         if (prog < 1) requestAnimationFrame(pas);
       };
       requestAnimationFrame(pas);
@@ -87,34 +115,7 @@
     }
   }
 
-  /* ---------- 3b. Bandeau d'intégrations : boucle fluide sans trou ----------
-     Le HTML ne contient que les 4 outils. On les duplique ici autant de fois
-     que nécessaire pour couvrir l'écran, puis on copie l'ensemble une fois
-     pour que la translation -50 % reboucle sans laisser de vide. */
-  var piste = document.querySelector(".marquee-track");
-  if (piste && piste.children.length) {
-    var modeles = Array.prototype.slice.call(piste.children);
-    var ajouterSerie = function () {
-      modeles.forEach(function (item) {
-        var copie = item.cloneNode(true);
-        copie.setAttribute("aria-hidden", "true");
-        piste.appendChild(copie);
-      });
-    };
-    var cible = Math.max(window.innerWidth, document.documentElement.clientWidth || 0) * 1.15;
-    var garde = 0;
-    while (piste.scrollWidth < cible && garde < 40) { ajouterSerie(); garde++; }
-    // Copie de l'ensemble obtenu pour la boucle continue.
-    Array.prototype.slice.call(piste.children).forEach(function (item) {
-      var copie = item.cloneNode(true);
-      copie.setAttribute("aria-hidden", "true");
-      piste.appendChild(copie);
-    });
-  }
-
-  /* ---------- 3c. Lien de navigation actif (scroll-spy) ----------
-     Souligne le lien de la section actuellement visible. Purement
-     visuel : la navigation fonctionne pareil si ce bloc échoue. */
+  /* ---------- 5. Lien de navigation actif (scroll-spy) ---------- */
   var liensNav = $$(".nav-links a");
   if (liensNav.length && "IntersectionObserver" in window) {
     var parId = {};
@@ -137,16 +138,185 @@
     sectionsNav.forEach(function (s) { obsNav.observe(s); });
   }
 
-  /* ===== Effets « gourmands » : souris fine + mouvement autorisé ===== */
+  /* ---------- 6. Calculatrice d'heures perdues ----------
+     Hypothèses : 8 min de coordination par rendez-vous, 47 semaines
+     et 249 jours ouvrables par année. Aucune donnée n'est envoyée. */
+  var calcRoot = document.getElementById("calculatrice");
+  if (calcRoot) {
+    var MIN_PAR_RDV = 8, SEMAINES = 47, JOURS = 249;
+    var TAUX_MIN = 25, TAUX_MAX = 150, TAUX_PAS = 5;
+    var etat = { rdv: 12, mails: 15, minMail: 6, taux: 45 };
+    var affiche = { y: 0, m: 0, cash: 0 };
+    var rafs = {};
+
+    var el = {
+      rdv: $("#calcRdv"), rdvVal: $("#calcRdvVal"), rdvFill: $("#calcRdvFill"),
+      mails: $("#calcMails"), mailsVal: $("#calcMailsVal"), mailsFill: $("#calcMailsFill"),
+      min: $("#calcMin"), minVal: $("#calcMinVal"), minFill: $("#calcMinFill"),
+      rateUp: $("#calcRateUp"), rateDown: $("#calcRateDown"),
+      rateVal: $("#calcRateVal"), rateEcho: $("#calcRateEcho"),
+      yd: $("#calcYd"), md: $("#calcMd"), cashd: $("#calcCashd"),
+      phraseBig: $("#calcPhraseBig"), phraseSmall: $("#calcPhraseSmall"),
+      concY: $("#calcConcY")
+    };
+
+    var cibles = function () {
+      var yMin = etat.rdv * MIN_PAR_RDV * SEMAINES + etat.mails * etat.minMail * JOURS;
+      var yH = yMin / 60;
+      return { y: yH, m: yH / 12, cash: yH * etat.taux };
+    };
+
+    var peindre = function () {
+      if (el.yd) el.yd.textContent = fmtInt(affiche.y);
+      if (el.md) el.md.textContent = fmt1(affiche.m);
+      if (el.cashd) el.cashd.textContent = fmtInt(affiche.cash);
+    };
+
+    var majPhrase = function () {
+      var tg = cibles();
+      var grand = tg.y >= 25;
+      if (el.phraseBig) el.phraseBig.hidden = !grand;
+      if (el.phraseSmall) el.phraseSmall.hidden = grand;
+      if (el.concY) el.concY.textContent = fmtInt(tg.y) + " heures par année";
+    };
+
+    var tween = function (cle, vers, duree) {
+      if (rafs[cle]) cancelAnimationFrame(rafs[cle]);
+      if (reduit || !duree) { affiche[cle] = vers; peindre(); return; }
+      var de = affiche[cle] || 0;
+      var t0 = performance.now();
+      var pas = function (t) {
+        var p = Math.min(1, (t - t0) / duree);
+        var e = 1 - Math.pow(1 - p, 3);
+        affiche[cle] = de + (vers - de) * e;
+        peindre();
+        if (p < 1) rafs[cle] = requestAnimationFrame(pas);
+      };
+      rafs[cle] = requestAnimationFrame(pas);
+    };
+
+    var recalculer = function (duree) {
+      var tg = cibles();
+      tween("y", tg.y, duree);
+      tween("m", tg.m, duree);
+      tween("cash", tg.cash, duree);
+      majPhrase();
+    };
+
+    var majCurseurs = function () {
+      if (el.rdvVal) el.rdvVal.textContent = etat.rdv;
+      if (el.mailsVal) el.mailsVal.textContent = etat.mails;
+      if (el.minVal) el.minVal.textContent = etat.minMail;
+      if (el.rdvFill) el.rdvFill.style.width = (etat.rdv / 60 * 100).toFixed(1) + "%";
+      if (el.mailsFill) el.mailsFill.style.width = (etat.mails / 60 * 100).toFixed(1) + "%";
+      if (el.minFill) el.minFill.style.width = ((etat.minMail - 1) / 19 * 100).toFixed(1) + "%";
+      if (el.rateVal) el.rateVal.textContent = etat.taux + " $ / h";
+      if (el.rateEcho) el.rateEcho.textContent = etat.taux;
+    };
+
+    var brancher = function (input, cle) {
+      if (!input) return;
+      input.addEventListener("input", function () {
+        etat[cle] = parseInt(input.value, 10) || 0;
+        majCurseurs();
+        recalculer(360);
+      });
+    };
+    brancher(el.rdv, "rdv");
+    brancher(el.mails, "mails");
+    brancher(el.min, "minMail");
+
+    if (el.rateUp) el.rateUp.addEventListener("click", function () {
+      etat.taux = Math.min(TAUX_MAX, etat.taux + TAUX_PAS);
+      majCurseurs(); recalculer(360);
+    });
+    if (el.rateDown) el.rateDown.addEventListener("click", function () {
+      etat.taux = Math.max(TAUX_MIN, etat.taux - TAUX_PAS);
+      majCurseurs(); recalculer(360);
+    });
+
+    majCurseurs();
+    majPhrase();
+
+    // Première animation quand la section devient visible.
+    if (reduit || !("IntersectionObserver" in window)) {
+      recalculer(0);
+    } else {
+      var obsCalc = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) {
+          if (e.isIntersecting) {
+            recalculer(1150);
+            obsCalc.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.25 });
+      obsCalc.observe(calcRoot);
+    }
+  }
+
+  /* ---------- 7. FAQ : questions à gauche, réponse à droite ---------- */
+  var faqList = document.getElementById("faqList");
+  var faqPane = document.getElementById("faqPane");
+  if (faqList && faqPane) {
+    var boutons = $$(".faq-btn", faqList);
+    var reponses = $$(".faq-answer", faqPane);
+    var faqActive = 0;
+    boutons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var i = parseInt(btn.getAttribute("data-faq"), 10);
+        if (i === faqActive) return;
+        boutons.forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        var montrer = function () {
+          reponses.forEach(function (r) {
+            var visible = parseInt(r.getAttribute("data-faq"), 10) === i;
+            r.hidden = !visible;
+            if (visible && !reduit) {
+              r.classList.add("out");
+              void r.offsetWidth;
+              r.classList.remove("out");
+            }
+          });
+        };
+        faqActive = i;
+        montrer();
+      });
+    });
+  }
+
+  /* ---------- 8. CTA collant (mobile, après un écran de défilement) ---------- */
+  var sticky = document.getElementById("stickyCta");
+  var zoneReserver = document.getElementById("reserver");
+  if (sticky) {
+    var reserverVisible = false;
+    if (zoneReserver && "IntersectionObserver" in window) {
+      var obsSticky = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) { reserverVisible = e.isIntersecting; majSticky(); });
+      }, { threshold: 0.04 });
+      obsSticky.observe(zoneReserver);
+    }
+    var majSticky = function () {
+      var montrer = mobile.matches &&
+        window.scrollY > window.innerHeight * 0.55 &&
+        !reserverVisible;
+      sticky.hidden = !montrer;
+    };
+    window.addEventListener("scroll", majSticky, { passive: true });
+    window.addEventListener("resize", majSticky);
+    if (mobile.addEventListener) mobile.addEventListener("change", majSticky);
+    majSticky();
+  }
+
+  /* ===== Effets « souris » : pointeur fin + mouvement autorisé ===== */
   if (souris && !reduit) {
 
-    /* ---------- 4. Curseur lumineux ---------- */
+    /* ---------- 9. Curseur lumineux ---------- */
     var dot = document.getElementById("cursorDot");
     var anneau = document.getElementById("cursorRing");
     if (dot && anneau) {
       document.body.classList.add("cursor-on");
-      var ax = window.innerWidth / 2, ay = window.innerHeight / 2; // position lissée de l'anneau
-      var cx = ax, cy = ay;                                        // cible (souris)
+      var ax = window.innerWidth / 2, ay = window.innerHeight / 2;
+      var cx = ax, cy = ay;
       window.addEventListener("mousemove", function (e) {
         cx = e.clientX; cy = e.clientY;
         dot.style.transform = "translate(" + cx + "px," + cy + "px) translate(-50%,-50%)";
@@ -159,7 +329,7 @@
       };
       requestAnimationFrame(suivre);
 
-      var interactifs = "a, button, input, textarea, select, .vtab, .process-row, .vtabs-gallery";
+      var interactifs = "a, button, input, textarea, select, .faq-btn, .how-card, .mock";
       document.addEventListener("mouseover", function (e) {
         if (e.target.closest && e.target.closest(interactifs)) anneau.classList.add("hovering");
       });
@@ -169,13 +339,11 @@
       document.addEventListener("mousedown", function () { anneau.classList.add("clic"); });
       document.addEventListener("mouseup", function () { anneau.classList.remove("clic"); });
 
-      // Une fois rendu à la section « Réserver » (et plus bas), on rend la main
-      // au curseur natif : le suivi lumineux bleu se désactive pour faciliter
-      // le remplissage du formulaire de réservation.
-      var zoneReservation = document.getElementById("reserver");
-      if (zoneReservation) {
+      // Dans les zones de formulaire (calculatrice, réservation), on rend la
+      // main au curseur natif : plus pratique pour manipuler curseurs et champs.
+      if (zoneReserver) {
         var majZoneCurseur = function () {
-          var entre = zoneReservation.getBoundingClientRect().top < window.innerHeight * 0.5;
+          var entre = zoneReserver.getBoundingClientRect().top < window.innerHeight * 0.5;
           document.body.classList.toggle("cursor-calme", entre);
         };
         window.addEventListener("scroll", majZoneCurseur, { passive: true });
@@ -183,56 +351,5 @@
         majZoneCurseur();
       }
     }
-
-    /* ---------- 5. Lueur interactive + parallaxe du hero ---------- */
-    var hero = document.getElementById("accueil");
-    var lueur = document.getElementById("heroGlow");
-    var heroInner = hero ? $(".container", hero) : null;
-    if (hero) {
-      hero.addEventListener("mousemove", function (e) {
-        var r = hero.getBoundingClientRect();
-        var mx = (e.clientX - r.left) / r.width;
-        var my = (e.clientY - r.top) / r.height;
-        if (lueur) {
-          lueur.style.setProperty("--mx", (mx * 100).toFixed(1) + "%");
-          lueur.style.setProperty("--my", (my * 100).toFixed(1) + "%");
-        }
-        if (heroInner) {
-          heroInner.style.transform =
-            "translate(" + ((mx - 0.5) * 14).toFixed(1) + "px," + ((my - 0.5) * 10).toFixed(1) + "px)";
-        }
-      });
-      hero.addEventListener("mouseleave", function () {
-        if (heroInner) heroInner.style.transform = "";
-      });
-    }
-
-    /* ---------- 6. Boutons magnétiques ---------- */
-    // On déplace l'élément vers le curseur. Pour le bouton « encadré » du hero,
-    // on bouge le cadre entier plutôt que le lien à l'intérieur.
-    var cadres = $$(".btn-frame");
-    var boutonsSeuls = $$(".btn").filter(function (b) { return !b.closest(".btn-frame"); });
-    cadres.concat(boutonsSeuls).forEach(function (el) {
-      el.addEventListener("mousemove", function (e) {
-        var r = el.getBoundingClientRect();
-        var x = e.clientX - r.left - r.width / 2;
-        var y = e.clientY - r.top - r.height / 2;
-        el.style.transform = "translate(" + (x * 0.25).toFixed(1) + "px," + (y * 0.4).toFixed(1) + "px)";
-      });
-      el.addEventListener("mouseleave", function () { el.style.transform = ""; });
-    });
-
-    /* ---------- 7. Cartes 3D (étapes) ---------- */
-    $$("[data-tilt]").forEach(function (carte) {
-      carte.addEventListener("mousemove", function (e) {
-        var r = carte.getBoundingClientRect();
-        var px = (e.clientX - r.left) / r.width - 0.5;
-        var py = (e.clientY - r.top) / r.height - 0.5;
-        carte.style.transform =
-          "perspective(800px) rotateX(" + (-py * 6).toFixed(2) + "deg) rotateY(" +
-          (px * 8).toFixed(2) + "deg) translateY(-6px)";
-      });
-      carte.addEventListener("mouseleave", function () { carte.style.transform = ""; });
-    });
   }
 })();

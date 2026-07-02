@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- ===== En-têtes de sécurité (compatibles GitHub Pages) ===== -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https://formsubmit.co; form-action 'self' https://formsubmit.co; base-uri 'self'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https://formsubmit.co; form-action 'self' https://formsubmit.co; base-uri 'self'; object-src 'none'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <title>Automvia — Automatisation pour PME au Québec</title>
@@ -18,11 +18,16 @@
   <meta property="og:locale" content="fr_CA">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='15' fill='%230b0d12'/><text x='32' y='44' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='800' font-size='30' letter-spacing='-1'><tspan fill='%23ffffff'>A</tspan><tspan fill='%2360a5fa'>V</tspan></text></svg>">
 </head>
 <body>
+
+  <!-- ===== Intro : le wordmark apparaît puis se fond (une fois par session) ===== -->
+  <div class="intro-ov" id="introOverlay" aria-hidden="true" hidden>
+    <div class="intro-word">Autom<span>via</span></div>
+  </div>
 
   <!-- ===== Couche premium : barre de progression, grain, curseur ===== -->
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
@@ -30,21 +35,16 @@
   <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
   <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
-  <!-- ===== Projecteurs animés (s'estompent au défilement) ===== -->
-  <div class="spotlights" id="spotlights" aria-hidden="true">
-    <span></span><span></span><span></span>
-  </div>
-
-  <!-- ===== NAVIGATION (barre flottante, se compacte au défilement) ===== -->
+  <!-- ===== NAVIGATION ===== -->
   <header class="nav" id="nav">
     <div class="nav-shell" id="navShell">
       <div class="nav-inner">
         <a href="#accueil" class="nav-logo">Autom<span>via</span></a>
         <nav class="nav-links" id="navLinks">
-          <a href="#accueil">Accueil</a>
           <a href="#services">Services</a>
+          <a href="#calculatrice">Calculatrice</a>
           <a href="#comment">Comment ça marche</a>
-          <a href="#reserver">Réserver</a>
+          <a href="#faq">FAQ</a>
         </nav>
         <a href="#reserver" class="btn btn-primary nav-cta">Réserver un appel</a>
         <button class="nav-burger" id="navBurger" aria-label="Ouvrir le menu" aria-expanded="false">
@@ -57,217 +57,179 @@
   <main>
     <!-- ===== SECTION 1 : ACCUEIL ===== -->
     <section class="hero" id="accueil">
-      <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
+      <div class="halo halo-hero" aria-hidden="true"></div>
       <div class="container">
-        <a href="#reserver" class="hero-badge anim anim-1">
-          <span class="hero-badge-text">Prise de rendez-vous</span>
-          <span class="hero-badge-sep" aria-hidden="true"></span>
-          <span class="hero-badge-arrow" aria-hidden="true">
-            <span class="arrow-track">
-              <span class="arrow-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-              <span class="arrow-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-            </span>
-          </span>
-        </a>
-        <h1 class="anim anim-2">Automatisez votre PME.<br>Récupérez votre <span class="shimmer serif">temps</span>.</h1>
-        <p class="hero-sub anim anim-3">Automvia configure vos courriels automatiques et votre prise de rendez-vous en ligne, pour que vous arrêtiez de perdre du temps — et des clients — sur les tâches répétitives.</p>
-        <div class="hero-actions anim anim-4">
-          <span class="btn-frame">
-            <a href="#reserver" class="btn btn-primary btn-lg">Réserver un appel découverte gratuit</a>
-          </span>
-          <a href="#comment" class="btn btn-ghost btn-lg">Voir comment ça marche</a>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="pill anim anim-1">
+              <i class="pulse-dot" aria-hidden="true"></i>
+              Courriels · Rendez-vous · Suivis automatiques
+            </div>
+            <h1 class="anim anim-2">Automatisez votre PME. Récupérez votre <em class="serif">temps</em>.</h1>
+            <p class="hero-sub anim anim-3">Automvia configure vos courriels automatiques et votre prise de rendez-vous en ligne, pour que vous arrêtiez de perdre du temps — et des clients — sur les tâches répétitives.</p>
+            <div class="hero-actions anim anim-4">
+              <a href="#reserver" class="btn btn-primary btn-lg">Réserver un appel découverte gratuit</a>
+              <a href="#comment" class="btn btn-ghost btn-lg">Voir comment ça marche</a>
+            </div>
+            <div class="hero-stats anim anim-5">
+              <div class="hstat">
+                <span class="hstat-num" data-count-from="24" data-count-to="0" data-count-suffix=" h">0&nbsp;h</span>
+                <span class="hstat-label">Pour vous répondre</span>
+              </div>
+              <div class="hstat">
+                <span class="hstat-num">Gratuit</span>
+                <span class="hstat-label">Premier appel découverte</span>
+              </div>
+              <div class="hstat">
+                <span class="hstat-num" data-count-from="0" data-count-to="100" data-count-suffix=" %">100&nbsp;%</span>
+                <span class="hstat-label">Pensé pour les PME d'ici</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte « automatisation en direct » : purement décorative, en pur CSS -->
+          <div class="hero-flow anim anim-4" aria-hidden="true">
+            <div class="flow-card">
+              <div class="flow-head">
+                <span class="flow-title">Automatisation « nouveau client »</span>
+                <span class="flow-live"><i class="pulse-dot"></i>Actif</span>
+              </div>
+              <div class="flow-steps">
+                <div class="flow-step">
+                  <span class="flow-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+                  </span>
+                  <span class="flow-meta">
+                    <strong>Demande reçue</strong>
+                    <span>Formulaire du site</span>
+                  </span>
+                  <span class="flow-time">09 h 41</span>
+                </div>
+                <div class="flow-step">
+                  <span class="flow-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                  </span>
+                  <span class="flow-meta">
+                    <strong>Courriel envoyé</strong>
+                    <span>Confirmation automatique</span>
+                  </span>
+                  <span class="flow-time">09 h 41</span>
+                </div>
+                <div class="flow-step">
+                  <span class="flow-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/><path d="m9 15 2 2 4-4"/></svg>
+                  </span>
+                  <span class="flow-meta">
+                    <strong>Agenda mis à jour</strong>
+                    <span>Google Agenda</span>
+                  </span>
+                  <span class="flow-time">09 h 42</span>
+                </div>
+              </div>
+              <div class="flow-log">
+                <div class="flow-line" style="--d:.5s"><span>09 h 41</span>— Demande de Marie-Ève L. (Salon Lumen) reçue</div>
+                <div class="flow-line flow-line-hl" style="--d:1.6s"><span>09 h 41</span>— Confirmation envoyée automatiquement</div>
+                <div class="flow-line" style="--d:2.7s"><span>09 h 42</span>— Rendez-vous ajouté à l'agenda</div>
+                <div class="flow-cursor" aria-hidden="true">▮</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="hero-stats anim anim-5">
-          <div class="hstat">
-            <span class="hstat-num" data-count="24" data-suffix=" h">0 h</span>
-            <span class="hstat-label">Pour vous répondre</span>
-          </div>
-          <div class="hstat">
-            <span class="hstat-num">Gratuit</span>
-            <span class="hstat-label">Premier appel découverte</span>
-          </div>
-          <div class="hstat">
-            <span class="hstat-num" data-count="100" data-suffix=" %">0 %</span>
-            <span class="hstat-label">Pensé pour les PME d'ici</span>
-          </div>
-        </div>
-
-        <!-- Console de démonstration : un flux d'automatisation qui roule en boucle.
-             Purement décoratif (aria-hidden), aucun script requis : tout est en CSS. -->
-        <div class="hero-demo anim anim-6" aria-hidden="true">
-          <div class="demo-window">
-            <div class="demo-bar">
-              <span class="demo-dots"><i></i><i></i><i></i></span>
-              <span class="demo-title">Automatisation « nouveau client »</span>
-              <span class="demo-live"><i></i>Actif</span>
-            </div>
-            <div class="demo-flow">
-              <div class="demo-node" style="--d:0s">
-                <span class="demo-node-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
-                </span>
-                <span class="demo-node-name">Demande reçue</span>
-                <span class="demo-node-sub">Formulaire du site</span>
-              </div>
-              <div class="demo-link" style="--d:1.1s"><i></i></div>
-              <div class="demo-node" style="--d:2.4s">
-                <span class="demo-node-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-                </span>
-                <span class="demo-node-name">Courriel envoyé</span>
-                <span class="demo-node-sub">Confirmation automatique</span>
-              </div>
-              <div class="demo-link" style="--d:3.5s"><i></i></div>
-              <div class="demo-node" style="--d:4.8s">
-                <span class="demo-node-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/><path d="m9 15 2 2 4-4"/></svg>
-                </span>
-                <span class="demo-node-name">Agenda mis à jour</span>
-                <span class="demo-node-sub">Google Agenda</span>
-              </div>
-            </div>
-            <div class="demo-log">
-              <span class="demo-log-line" style="--d:1.9s">09 h 41 — Demande de Marie-Ève L. (Salon Lumen) reçue</span>
-              <span class="demo-log-line" style="--d:2.5s">09 h 41 — Confirmation envoyée automatiquement</span>
-              <span class="demo-log-line" style="--d:3.1s">09 h 42 — Rendez-vous ajouté à l'agenda</span>
-            </div>
+        <div class="hero-tools anim anim-6">
+          <p>On se branche aux outils que vous utilisez déjà — sans rien changer à vos habitudes.</p>
+          <div class="tools-chips">
+            <span>Gmail</span><span>Outlook</span><span>Google Agenda</span><span>Calendly</span><span>Google Sheets</span><span>Formulaires web</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== Bandeau d'intégrations (défilement infini) ===== -->
-    <section class="logos" aria-label="Outils compatibles">
-      <p class="logos-label">On se branche aux outils que vous utilisez déjà — sans rien changer à vos habitudes.</p>
-      <div class="marquee">
-        <div class="marquee-track">
-          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Gmail</span>
-          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m3 9 9 6 9-6"/></svg>Outlook</span>
-          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></svg>Google Agenda</span>
-          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Calendly</span>
-          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>Google Sheets</span>
-          <span class="marquee-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>Formulaires web</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== SECTION 2 : SERVICES (onglets verticaux + galerie) ===== -->
+    <!-- ===== SECTION 2 : SERVICES (rangées texte / maquette) ===== -->
     <section class="section" id="services">
       <div class="container">
-        <div class="vtabs reveal" id="vtabs">
-          <div class="vtabs-left">
-            <div class="vtabs-head">
-              <h2>Comment on peut vous aider</h2>
-              <span class="vtabs-label">(Services)</span>
-            </div>
-            <div class="vtabs-list">
-              <button type="button" class="vtab active" data-index="0">
-                <span class="vtab-progress" aria-hidden="true"><i></i></span>
-                <span class="vtab-num" aria-hidden="true">/01</span>
-                <span class="vtab-body">
-                  <span class="vtab-title">Automatisation des courriels</span>
-                  <span class="vtab-desc"><span>Confirmations, rappels et suivis envoyés automatiquement à vos clients. Plus jamais un courriel oublié.</span></span>
+        <div class="reveal">
+          <div class="sec-label">( Services )</div>
+          <h2 class="sec-title">Comment on peut vous <em class="serif">aider</em></h2>
+        </div>
+
+        <div class="srow reveal">
+          <div class="srow-copy">
+            <div class="srow-num">/ 01</div>
+            <h3>Automatisation des courriels</h3>
+            <p>Confirmations, rappels et suivis envoyés automatiquement à vos clients. Plus jamais un courriel oublié.</p>
+          </div>
+          <div class="srow-visual">
+            <div class="mock mock-mail" role="img" aria-label="Aperçu : courriels de confirmation et de rappel envoyés automatiquement">
+              <div class="mock-mail-head">
+                <span class="mock-avatar">A</span>
+                <span class="mock-mail-meta">
+                  <strong>Garage St-Pierre</strong>
+                  <span>à : julie.tremblay@exemple.ca</span>
                 </span>
-              </button>
-              <button type="button" class="vtab" data-index="1">
-                <span class="vtab-progress" aria-hidden="true"><i></i></span>
-                <span class="vtab-num" aria-hidden="true">/02</span>
-                <span class="vtab-body">
-                  <span class="vtab-title">Prise de rendez-vous automatisée</span>
-                  <span class="vtab-desc"><span>Vos clients réservent en ligne 24/7. Votre agenda se remplit tout seul, synchronisé à votre calendrier.</span></span>
+                <span class="chip chip-blue">Envoyé automatiquement</span>
+              </div>
+              <p class="mock-mail-subject">Confirmation de votre rendez-vous — jeudi 9 h 30</p>
+              <p class="mock-mail-body">Bonjour Julie, votre rendez-vous est confirmé. Un rappel vous sera envoyé 24 h à l'avance. Pour modifier, répondez à ce courriel…</p>
+              <div class="mock-mail-next">
+                <span class="mock-avatar mock-avatar-2">R</span>
+                <span class="mock-mail-meta">
+                  <strong>Rappel — votre rendez-vous demain</strong>
+                  <span>programmé : mercredi 9 h 30</span>
                 </span>
-              </button>
-              <button type="button" class="vtab" data-index="2">
-                <span class="vtab-progress" aria-hidden="true"><i></i></span>
-                <span class="vtab-num" aria-hidden="true">/03</span>
-                <span class="vtab-body">
-                  <span class="vtab-title">Amélioration de site web</span>
-                  <span class="vtab-desc"><span>Un site moderne, rapide et clair qui transforme vos visiteurs en clients.</span></span>
-                </span>
-              </button>
+                <span class="chip">En file</span>
+              </div>
             </div>
           </div>
-          <div class="vtabs-right">
-            <div class="vtabs-gallery" id="vtabsGallery">
-              <!-- Maquettes codées main (aucune photo banque d'images) : chaque
-                   slide illustre le service avec une vraie interface miniature. -->
-              <div class="vtab-slide active" role="img" aria-label="Aperçu : courriels de confirmation et de rappel envoyés automatiquement">
-                <div class="mock mock-mail">
-                  <div class="mock-mail-card">
-                    <div class="mock-mail-head">
-                      <span class="mock-avatar">A</span>
-                      <span class="mock-mail-meta">
-                        <strong>Garage St-Pierre</strong>
-                        <span>à : julie.tremblay@exemple.ca</span>
-                      </span>
-                      <span class="mock-chip mock-chip-auto">Envoyé automatiquement</span>
-                    </div>
-                    <p class="mock-mail-subject">Confirmation de votre rendez-vous — jeudi 9 h 30</p>
-                    <p class="mock-mail-body">Bonjour Julie, votre rendez-vous est confirmé. Un rappel vous sera envoyé 24 h à l'avance. Pour modifier, répondez à ce courriel…</p>
-                  </div>
-                  <div class="mock-mail-card mock-mail-card-2">
-                    <div class="mock-mail-head">
-                      <span class="mock-avatar mock-avatar-2">R</span>
-                      <span class="mock-mail-meta">
-                        <strong>Rappel — votre rendez-vous demain</strong>
-                        <span>programmé : mercredi 9 h 30</span>
-                      </span>
-                      <span class="mock-chip">En file</span>
-                    </div>
-                  </div>
-                </div>
+        </div>
+
+        <div class="srow reveal">
+          <div class="srow-copy">
+            <div class="srow-num">/ 02</div>
+            <h3>Prise de rendez-vous automatisée</h3>
+            <p>Vos clients réservent en ligne 24/7. Votre agenda se remplit tout seul, synchronisé à votre calendrier.</p>
+          </div>
+          <div class="srow-visual">
+            <div class="mock mock-cal" role="img" aria-label="Aperçu : réservation en ligne synchronisée à votre agenda">
+              <div class="mock-cal-head">
+                <strong>Semaine du 13</strong>
+                <span class="chip chip-blue">Synchronisé</span>
               </div>
-              <div class="vtab-slide" role="img" aria-label="Aperçu : réservation en ligne synchronisée à votre agenda">
-                <div class="mock mock-cal">
-                  <div class="mock-cal-panel">
-                    <div class="mock-cal-week">
-                      <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
-                    </div>
-                    <div class="mock-cal-grid">
-                      <i></i><i></i><i class="taken"></i><i></i><i></i><i class="off"></i><i class="off"></i>
-                      <i></i><i class="taken"></i><i></i><i class="sel"></i><i></i><i class="off"></i><i class="off"></i>
-                      <i></i><i></i><i></i><i></i><i class="taken"></i><i class="off"></i><i class="off"></i>
-                    </div>
-                  </div>
-                  <div class="mock-cal-card">
-                    <span class="mock-cal-dot"></span>
-                    <span class="mock-cal-meta">
-                      <strong>Nouveau rendez-vous</strong>
-                      <span>Marc Bélanger — mardi 10 h</span>
-                    </span>
-                    <span class="mock-chip mock-chip-auto">Ajouté à l'agenda</span>
-                  </div>
-                </div>
+              <div class="mock-cal-week"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+              <div class="mock-cal-days">
+                <span>13</span><span class="sel">14</span><span>15</span><span>16</span><span>17</span><span class="off">18</span><span class="off">19</span>
               </div>
-              <div class="vtab-slide" role="img" aria-label="Aperçu : site web moderne, rapide et pensé mobile">
-                <div class="mock mock-site">
-                  <div class="mock-browser">
-                    <div class="mock-browser-bar">
-                      <span class="demo-dots"><i></i><i></i><i></i></span>
-                      <span class="mock-url">votreentreprise.ca</span>
-                    </div>
-                    <div class="mock-browser-body">
-                      <span class="mock-sk-nav"></span>
-                      <span class="mock-sk-title"></span>
-                      <span class="mock-sk-sub"></span>
-                      <span class="mock-sk-btn"></span>
-                      <span class="mock-sk-cards"><i></i><i></i><i></i></span>
-                    </div>
-                  </div>
-                  <div class="mock-badges">
-                    <span>Rapide</span><span>Clair</span><span>Pensé mobile</span>
-                  </div>
-                </div>
+              <div class="mock-cal-new">
+                <span class="mock-cal-meta">
+                  <strong>Nouveau rendez-vous</strong>
+                  <span>Marc Bélanger — mardi 10 h</span>
+                </span>
+                <span class="mock-cal-ok">✓ Ajouté à l'agenda</span>
               </div>
-              <div class="vtab-shade" aria-hidden="true"></div>
-              <div class="vtabs-arrows">
-                <button type="button" id="vtabPrev" aria-label="Service précédent">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                </button>
-                <button type="button" id="vtabNext" aria-label="Service suivant">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="srow reveal">
+          <div class="srow-copy">
+            <div class="srow-num">/ 03</div>
+            <h3>Amélioration de site web</h3>
+            <p>Un site moderne, rapide et clair qui transforme vos visiteurs en clients.</p>
+          </div>
+          <div class="srow-visual">
+            <div class="mock mock-site" role="img" aria-label="Aperçu : site web moderne, rapide et pensé mobile">
+              <div class="mock-browser-bar">
+                <span class="dots"><i></i><i></i><i></i></span>
+                <span class="mock-url">votreentreprise.ca</span>
+              </div>
+              <div class="mock-browser-body">
+                <span class="sk sk-title"></span>
+                <span class="sk sk-line"></span>
+                <span class="sk sk-line sk-short"></span>
+                <span class="sk-btn">Réserver</span>
+                <div class="mock-badges">
+                  <span>Rapide</span><span>Clair</span><span>Pensé mobile</span>
+                </div>
               </div>
             </div>
           </div>
@@ -275,46 +237,239 @@
       </div>
     </section>
 
-    <!-- ===== SECTION 3 : COMMENT ÇA MARCHE ===== -->
-    <section class="section section-alt" id="comment">
+    <!-- ===== SECTION 3 : CALCULATRICE ===== -->
+    <section class="section" id="calculatrice">
+      <div class="halo halo-calc" aria-hidden="true"></div>
       <div class="container">
-        <h2 class="reveal">Comment ça <span class="serif">marche</span></h2>
-        <p class="section-sub reveal">Trois étapes, pas de jargon, pas de casse-tête.</p>
-        <div class="process reveal-stagger">
-          <div class="process-row">
-            <span class="process-num" aria-hidden="true">01</span>
-            <div class="process-body">
-              <h3>Appel découverte</h3>
-              <p>On discute de vos besoins et des tâches qui vous font perdre du temps. Pas de vente sous pression : si on ne peut pas vous aider, on vous le dit.</p>
+        <div class="reveal">
+          <div class="sec-label">( Calculatrice )</div>
+          <h2 class="sec-title">Combien d'heures vous <em class="serif">perdez</em>?</h2>
+          <p class="sec-sub">Trois curseurs, zéro courriel de vente. Juste votre semaine, en chiffres.</p>
+        </div>
+        <div class="calc reveal">
+          <div class="calc-panel">
+            <div class="calc-slider">
+              <div class="calc-slider-head">
+                <span>Rendez-vous par semaine</span>
+                <output id="calcRdvVal">12</output>
+              </div>
+              <div class="range-wrap">
+                <div class="range-track" aria-hidden="true"></div>
+                <div class="range-fill" id="calcRdvFill" aria-hidden="true"></div>
+                <input type="range" min="0" max="60" step="1" value="12" id="calcRdv" aria-label="Rendez-vous par semaine">
+              </div>
             </div>
-            <span class="process-meta">30 min · gratuit</span>
+            <div class="calc-slider">
+              <div class="calc-slider-head">
+                <span>Courriels tapés à la main, par jour</span>
+                <output id="calcMailsVal">15</output>
+              </div>
+              <div class="range-wrap">
+                <div class="range-track" aria-hidden="true"></div>
+                <div class="range-fill" id="calcMailsFill" aria-hidden="true"></div>
+                <input type="range" min="0" max="60" step="1" value="15" id="calcMails" aria-label="Courriels tapés à la main par jour">
+              </div>
+            </div>
+            <div class="calc-slider">
+              <div class="calc-slider-head">
+                <span>Minutes par courriel</span>
+                <output id="calcMinVal">6</output>
+              </div>
+              <div class="range-wrap">
+                <div class="range-track" aria-hidden="true"></div>
+                <div class="range-fill" id="calcMinFill" aria-hidden="true"></div>
+                <input type="range" min="1" max="20" step="1" value="6" id="calcMin" aria-label="Minutes par courriel">
+              </div>
+            </div>
+            <div class="calc-rate">
+              <span>Votre heure vaut</span>
+              <span class="calc-rate-ctrl">
+                <button type="button" id="calcRateDown" aria-label="Réduire le taux horaire">−</button>
+                <span id="calcRateVal">45 $ / h</span>
+                <button type="button" id="calcRateUp" aria-label="Augmenter le taux horaire">+</button>
+              </span>
+            </div>
+            <p class="calc-notes">Hypothèses : 8 min de coordination par rendez-vous, 47 semaines et 249 jours ouvrables par année. Ajustez le taux — vous connaissez votre chiffre mieux que nous.</p>
           </div>
-          <div class="process-row">
-            <span class="process-num" aria-hidden="true">02</span>
-            <div class="process-body">
-              <h3>Configuration</h3>
-              <p>On installe et connecte vos automatisations à vos outils (courriel, agenda, site web). Vous n'avez rien à apprendre, rien à changer à vos habitudes.</p>
+          <div class="calc-result">
+            <div class="sec-label sec-label-light">( le vrai chiffre )</div>
+            <div class="calc-big"><span id="calcYd">0</span><em>h / année</em></div>
+            <div class="calc-cards">
+              <div class="calc-card">
+                <strong><span id="calcMd">0</span> h</strong>
+                <span>par mois</span>
+              </div>
+              <div class="calc-card">
+                <strong><span id="calcCashd">0</span> $</strong>
+                <span>par année, à <span id="calcRateEcho">45</span> $ / h</span>
+              </div>
             </div>
-            <span class="process-meta">Clé en main</span>
-          </div>
-          <div class="process-row">
-            <span class="process-num" aria-hidden="true">03</span>
-            <div class="process-body">
-              <h3>Vous gagnez du temps</h3>
-              <p>Vos systèmes roulent tout seuls, jour et nuit. Vous vous concentrez sur votre métier, on s'occupe du reste.</p>
+            <div class="calc-phrase">
+              <span id="calcPhraseBig">C'est <em class="serif" id="calcConcY">0 heures par année</em> que vos systèmes pourraient faire à votre place.</span>
+              <span id="calcPhraseSmall" hidden>Honnêtement? À ce rythme-là, vous vous en tirez bien. Montez les curseurs pour voir une semaine plus chargée.</span>
             </div>
-            <span class="process-meta">En continu</span>
+            <a href="#reserver" class="btn btn-primary btn-lg calc-cta">Récupérez ces heures — réservez un appel</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== SECTION 4 : RÉSERVER ===== -->
+    <!-- ===== SECTION 4 : COMMENT ÇA MARCHE ===== -->
+    <section class="section" id="comment">
+      <div class="container">
+        <div class="reveal">
+          <div class="sec-label">( Comment ça marche )</div>
+          <h2 class="sec-title">Comment ça <em class="serif">marche</em></h2>
+          <p class="sec-sub">Trois étapes, pas de jargon, pas de casse-tête.</p>
+        </div>
+        <div class="how reveal-stagger">
+          <div class="how-card">
+            <div class="srow-num">/ 01</div>
+            <h3>Appel découverte</h3>
+            <p>On discute de vos besoins et des tâches qui vous font perdre du temps. Pas de vente sous pression : si on ne peut pas vous aider, on vous le dit.</p>
+            <span class="chip chip-blue">30 min · gratuit</span>
+          </div>
+          <div class="how-card">
+            <div class="srow-num">/ 02</div>
+            <h3>Configuration</h3>
+            <p>On installe et connecte vos automatisations à vos outils (courriel, agenda, site web). Vous n'avez rien à apprendre, rien à changer à vos habitudes.</p>
+            <span class="chip chip-blue">Clé en main</span>
+          </div>
+          <div class="how-card">
+            <div class="srow-num">/ 03</div>
+            <h3>Vous gagnez du temps</h3>
+            <p>Vos systèmes roulent tout seuls, jour et nuit. Vous vous concentrez sur votre métier, on s'occupe du reste.</p>
+            <span class="chip chip-blue">En continu</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 5 : AVANT / APRÈS ===== -->
+    <section class="section" id="avant-apres">
+      <div class="container">
+        <div class="reveal">
+          <div class="sec-label">( Avant / Après )</div>
+          <h2 class="sec-title">La même semaine, deux <em class="serif">réalités</em>.</h2>
+        </div>
+        <div class="ba">
+          <div class="ba-col ba-before reveal-stagger">
+            <div class="sec-label ba-label">À la main</div>
+            <div class="ba-item"><span>✕</span>Un client écrit… et attend deux jours pour une réponse</div>
+            <div class="ba-item"><span>✕</span>Des doubles réservations dans l'agenda</div>
+            <div class="ba-item"><span>✕</span>Des courriels oubliés, des clients perdus</div>
+            <div class="ba-item"><span>✕</span>Des suivis qui tombent entre deux chaises</div>
+            <div class="ba-item"><span>✕</span>Vos soirées passées à répondre</div>
+          </div>
+          <div class="ba-col ba-after reveal-stagger">
+            <div class="sec-label sec-label-light ba-label">Avec Automvia</div>
+            <div class="ba-item"><span>✓</span>Confirmation envoyée en 30 secondes, même le samedi soir</div>
+            <div class="ba-item"><span>✓</span>Agenda synchronisé tout seul, tout le temps</div>
+            <div class="ba-item"><span>✓</span>Rappels automatiques, envoyés à l'heure juste</div>
+            <div class="ba-item"><span>✓</span>Relances qui partent sans que vous y pensiez</div>
+            <div class="ba-item"><span>✓</span>Vous fermez à 17 h. Le système continue.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 6 : COMPARATIF ===== -->
+    <section class="section" id="comparatif">
+      <div class="container">
+        <div class="reveal">
+          <div class="sec-label">( Vos options )</div>
+          <h2 class="sec-title">Trois façons de régler le <em class="serif">problème</em>.</h2>
+        </div>
+        <div class="compare reveal-stagger">
+          <div class="cmp-card">
+            <h3>Tout faire à la main</h3>
+            <p class="cmp-tag">Le statu quo</p>
+            <div class="cmp-row"><span>Prix</span><strong>« Gratuit » — payé en soirées</strong></div>
+            <div class="cmp-row"><span>Mise en place</span><strong>Jamais vraiment finie</strong></div>
+            <div class="cmp-row"><span>Personnalisation</span><strong>Tout repose sur vous</strong></div>
+            <div class="cmp-row"><span>Support en français, d'ici</span><strong>Vous êtes le support</strong></div>
+            <div class="cmp-row"><span>Engagement</span><strong>Vos soirées, à vie</strong></div>
+          </div>
+          <div class="cmp-card">
+            <h3>Une grosse agence</h3>
+            <p class="cmp-tag">Le marteau-pilon</p>
+            <div class="cmp-row"><span>Prix</span><strong>Élevé, facturé à l'heure</strong></div>
+            <div class="cmp-row"><span>Mise en place</span><strong>Des mois, des réunions</strong></div>
+            <div class="cmp-row"><span>Personnalisation</span><strong>Standard, malgré le prix</strong></div>
+            <div class="cmp-row"><span>Support en français, d'ici</span><strong>Variable, souvent ailleurs</strong></div>
+            <div class="cmp-row"><span>Engagement</span><strong>Contrat de 12 mois</strong></div>
+          </div>
+          <div class="cmp-card cmp-us">
+            <div class="cmp-us-head">
+              <h3>Automvia</h3>
+              <span class="chip chip-blue">nous</span>
+            </div>
+            <p class="cmp-tag">Deux gars, vos outils</p>
+            <div class="cmp-row"><span>Prix</span><strong>Prix fixe, annoncé d'avance</strong></div>
+            <div class="cmp-row"><span>Mise en place</span><strong>Quelques semaines</strong></div>
+            <div class="cmp-row"><span>Personnalisation</span><strong>Bâtie autour de vos habitudes</strong></div>
+            <div class="cmp-row"><span>Support en français, d'ici</span><strong>Nous deux, directement</strong></div>
+            <div class="cmp-row"><span>Engagement</span><strong>Aucun contrat forcé</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 7 : FAQ ===== -->
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="reveal">
+          <div class="sec-label">( FAQ )</div>
+          <h2 class="sec-title">Questions franches, réponses <em class="serif">franches</em>.</h2>
+        </div>
+        <div class="faq reveal">
+          <div class="faq-list" id="faqList">
+            <button type="button" class="faq-btn active" data-faq="0"><span>01</span>Combien ça coûte?</button>
+            <button type="button" class="faq-btn" data-faq="1"><span>02</span>Je ne suis pas techno, c'est un problème?</button>
+            <button type="button" class="faq-btn" data-faq="2"><span>03</span>Combien de temps avant que ça fonctionne?</button>
+            <button type="button" class="faq-btn" data-faq="3"><span>04</span>Et si ça brise?</button>
+            <button type="button" class="faq-btn" data-faq="4"><span>05</span>Mes données sont où?</button>
+            <button type="button" class="faq-btn" data-faq="5"><span>06</span>Pourquoi pas juste ChatGPT ou un logiciel tout fait?</button>
+          </div>
+          <div class="faq-pane" id="faqPane">
+            <div class="faq-answer" data-faq="0">
+              <h3>Combien ça coûte?</h3>
+              <p>Un prix fixe, annoncé avant de commencer. Pas de taux horaire qui s'étire, pas d'extras surprises sur la facture. Le premier appel est gratuit — et si on pense que ça ne vaut pas la dépense pour vous, on vous le dit.</p>
+            </div>
+            <div class="faq-answer" data-faq="1" hidden>
+              <h3>Je ne suis pas techno, c'est un problème?</h3>
+              <p>Non. C'est exactement pour ça qu'on existe. Vous n'avez rien à installer, rien à apprendre : on branche tout dans les outils que vous utilisez déjà. Si vous savez répondre à un texto, vous êtes assez techno.</p>
+            </div>
+            <div class="faq-answer" data-faq="2" hidden>
+              <h3>Combien de temps avant que ça fonctionne?</h3>
+              <p>Quelques semaines, pas des mois. On commence par ce qui vous fait perdre le plus de temps, et cette automatisation-là roule pendant qu'on bâtit le reste.</p>
+            </div>
+            <div class="faq-answer" data-faq="3" hidden>
+              <h3>Et si ça brise?</h3>
+              <p>On le répare, point. C'est nous qui l'avons bâti, on sait où regarder. Vous nous écrivez, on s'en occupe, vous retournez à vos clients.</p>
+            </div>
+            <div class="faq-answer" data-faq="4" hidden>
+              <h3>Mes données sont où?</h3>
+              <p>Dans vos comptes à vous : votre courriel, votre agenda, vos formulaires. On configure chez vous, on ne confisque rien. Si nos chemins se séparent demain matin, tout continue de vous appartenir.</p>
+            </div>
+            <div class="faq-answer" data-faq="5" hidden>
+              <h3>Pourquoi pas juste ChatGPT ou un logiciel tout fait?</h3>
+              <p>Essayez-les, sincèrement. Le problème n'est pas l'outil : c'est le temps de tout brancher ensemble, puis de l'entretenir. Un logiciel générique ne connaît ni votre agenda, ni vos clients, ni votre façon de travailler. Nous, on livre le tout branché — et si ça accroche, c'est notre problème, pas le vôtre.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 8 : RÉSERVER (logique réelle dans app.js, ne pas modifier les ids) ===== -->
     <section class="section" id="reserver">
+      <div class="halo halo-book" aria-hidden="true"></div>
       <div class="container">
-        <p class="live-badge reveal"><i aria-hidden="true"></i>Démonstration en direct</p>
-        <h2 class="reveal">Prêt à automatiser? Réservez votre <span class="serif">appel découverte</span>.</h2>
-        <p class="section-sub reveal">Ce module de réservation, on l'a codé nous-mêmes. C'est exactement le genre d'outil qu'on installe chez vous.</p>
+        <div class="reveal">
+          <div class="pill"><i class="pulse-dot" aria-hidden="true"></i>Démonstration en direct</div>
+          <h2 class="sec-title">Prêt à automatiser? Réservez votre appel <em class="serif">découverte</em>.</h2>
+          <p class="sec-sub">Ce module de réservation, on l'a codé nous-mêmes. C'est exactement le genre d'outil qu'on installe chez vous.</p>
+        </div>
 
         <div class="booking-existing" id="bookingExisting" hidden></div>
 
@@ -322,7 +477,7 @@
           <!-- Étape 1 : date + heure -->
           <div class="booking-grid">
             <div class="booking-panel">
-              <h3 class="booking-label">1. Choisissez une date</h3>
+              <h3 class="booking-label"><span class="booking-step">1.</span>Choisissez une date</h3>
               <div class="calendar">
                 <div class="calendar-head">
                   <button type="button" class="cal-nav" id="calPrev" aria-label="Mois précédent">‹</button>
@@ -338,7 +493,7 @@
             </div>
 
             <div class="booking-panel">
-              <h3 class="booking-label">2. Choisissez une heure</h3>
+              <h3 class="booking-label"><span class="booking-step">2.</span>Choisissez une heure</h3>
               <p class="slots-date" id="slotsDate">Sélectionnez d'abord une date dans le calendrier.</p>
               <div class="slots" id="slots"></div>
             </div>
@@ -346,7 +501,7 @@
 
           <!-- Étape 2 : formulaire -->
           <form class="booking-form" id="bookingForm" novalidate>
-            <h3 class="booking-label" id="formTitre">3. Vos coordonnées</h3>
+            <h3 class="booking-label" id="formTitre"><span class="booking-step">3.</span>Vos coordonnées</h3>
             <p class="change-hint" id="changeHint" hidden>Entrez le courriel utilisé lors de votre réservation et choisissez votre nouvelle date ci-dessus.</p>
             <div class="form-grid">
               <div class="form-field" id="champNom">
@@ -394,6 +549,16 @@
         </div>
       </div>
     </section>
+
+    <!-- ===== SECTION 9 : FINALE ===== -->
+    <section class="finale">
+      <div class="halo halo-finale" aria-hidden="true"></div>
+      <div class="container reveal">
+        <div class="finale-kicker"><span data-count-from="0" data-count-to="365">365</span> soirées par année. À qui appartiennent les vôtres?</div>
+        <h2>Vos <em class="serif">soirées</em> vous appartiennent.</h2>
+        <a href="#reserver" class="btn btn-primary btn-xl">Réserver un appel découverte</a>
+      </div>
+    </section>
   </main>
 
   <!-- ===== PIED DE PAGE ===== -->
@@ -406,16 +571,23 @@
         </div>
         <nav class="footer-links" aria-label="Liens du pied de page">
           <a href="#services">Services</a>
+          <a href="#calculatrice">Calculatrice</a>
           <a href="#comment">Comment ça marche</a>
-          <a href="#reserver">Réserver</a>
+          <a href="#faq">FAQ</a>
           <a href="mailto:automvia@gmail.com" class="footer-mail">automvia@gmail.com</a>
+          <a href="#reserver" class="btn btn-ghost">Réserver un appel</a>
         </nav>
-        <a href="#reserver" class="btn btn-primary">Réserver un appel</a>
       </div>
+      <p class="footer-regions">Trois-Rivières · Montréal · Québec · partout au Québec, à distance</p>
       <p class="footer-copy">© <span id="year"></span> Automvia. Conçu, codé et hébergé par nous, au Québec.</p>
     </div>
-    <div class="footer-marque" aria-hidden="true">Automvia</div>
   </footer>
+
+  <!-- ===== CTA collant (mobile seulement, géré par effets.js) ===== -->
+  <div class="sticky-cta" id="stickyCta" hidden>
+    <span>Un appel gratuit, 30 minutes.</span>
+    <a href="#reserver" class="btn btn-primary">Réserver</a>
+  </div>
 
   <script src="app.js"></script>
   <script src="effets.js"></script>
