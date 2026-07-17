@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- ===== En-têtes de sécurité (compatibles GitHub Pages) ===== -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https://formsubmit.co; form-action 'self' https://formsubmit.co; base-uri 'self'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://www.facebook.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://connect.facebook.net; connect-src 'self' https://formsubmit.co https://www.facebook.com https://connect.facebook.net; form-action 'self' https://formsubmit.co; base-uri 'self'; object-src 'none'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <title>Automvia — Automatisation pour PME au Québec</title>
@@ -588,6 +588,10 @@
     <span>Un appel gratuit, 30 minutes.</span>
     <a href="#reserver" class="btn btn-primary">Réserver</a>
   </div>
+
+  <!-- Pixel Meta (Automvia) — suivi des visiteurs pour le retargeting -->
+  <script src="pixel.js"></script>
+  <noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1457090043127666&ev=PageView&noscript=1"></noscript>
 
   <script src="app.js"></script>
   <script src="effets.js"></script>
